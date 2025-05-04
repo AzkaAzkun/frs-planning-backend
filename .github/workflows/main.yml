@@ -1,0 +1,38 @@
+name: Deploy Production
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the dev branch
+  push:
+    branches: [main] 
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            # Ensure Go binary is in the PATh
+            export PATH=$PATH:/usr/bin/go
+
+            cd /var/www/frs-planning-backend
+
+            sudo git stash
+            sudo git checkout main
+            sudo git pull --rebase origin main
+            sudo git status
+            sudo go build -o main .
+         
+            sudo systemctl restart frs-planning-backend.service
+            sudo systemctl status frs-planning-backend.service --no-pager
