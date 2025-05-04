@@ -13,7 +13,7 @@ func main() {
 	}
 
 	if err := cmd.Commands(); err != nil {
-		panic("Failed Get Command: " + err.Error())
+		panic("Failed Get Commands: " + err.Error())
 	}
 
 	RestApi := config.NewRest()
