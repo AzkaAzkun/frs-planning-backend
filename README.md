@@ -1,1 +1,1 @@
-# frs-plan-backend
+# frs-planning-backend
