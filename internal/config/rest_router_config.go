@@ -26,7 +26,7 @@ func NewRouter(server *gin.Engine) *gin.Engine {
 
 	server.GET("/api/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "pong",
+			"message": "pong pong",
 		})
 	})
 
