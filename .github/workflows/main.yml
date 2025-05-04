@@ -24,7 +24,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             # Ensure Go binary is in the PATh
-            export PATH=$PATH:/usr/bin/go
+            export PATH=$PATH:/usr/local/go/bin
 
             cd /var/www/frs-planning-backend
 
