@@ -32,7 +32,7 @@ jobs:
             sudo git checkout main
             sudo git pull --rebase origin main
             sudo git status
-            go build -o main -buildvcs=false .
+            sudo env "PATH=$PATH" go build -o main -buildvcs=false .
          
             sudo systemctl restart frs-planning-backend.service
             sudo systemctl status frs-planning-backend.service --no-pager
