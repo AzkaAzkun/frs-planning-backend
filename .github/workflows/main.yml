@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            # Ensure Go binary is in the PATh
+            # Ensure Go binary is in the PATH
             export PATH=$PATH:/usr/local/go/bin
 
             cd /var/www/frs-planning-backend
@@ -32,7 +32,7 @@ jobs:
             sudo git checkout main
             sudo git pull --rebase origin main
             sudo git status
-            sudo go build -o main .
+            go build -o main .
          
             sudo systemctl restart frs-planning-backend.service
             sudo systemctl status frs-planning-backend.service --no-pager
