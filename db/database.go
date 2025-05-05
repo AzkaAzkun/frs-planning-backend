@@ -1,8 +1,8 @@
 package db
 
 import (
-	mylog "film-management-api-golang/internal/pkg/logger"
 	"fmt"
+	mylog "frs-planning-backend/internal/pkg/logger"
 	"os"
 
 	"gorm.io/driver/postgres"

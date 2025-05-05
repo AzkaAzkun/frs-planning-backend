@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"film-management-api-golang/internal/api/service"
-	"film-management-api-golang/internal/pkg/response"
+	"frs-planning-backend/internal/api/service"
+	"frs-planning-backend/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )

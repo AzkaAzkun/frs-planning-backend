@@ -1,7 +1,7 @@
 package meta
 
 import (
-	"film-management-api-golang/internal/utils"
+	"frs-planning-backend/internal/utils"
 
 	"github.com/gin-gonic/gin"
 )

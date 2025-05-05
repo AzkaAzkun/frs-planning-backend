@@ -1,9 +1,9 @@
 package seeders
 
 import (
-	"film-management-api-golang/db/seeder/seeds"
-	mylog "film-management-api-golang/internal/pkg/logger"
 	"fmt"
+	"frs-planning-backend/db/seeder/seeds"
+	mylog "frs-planning-backend/internal/pkg/logger"
 
 	"gorm.io/gorm"
 )
@@ -11,7 +11,6 @@ import (
 func Seeding(db *gorm.DB) error {
 	seeders := []func(*gorm.DB) error{
 		seeds.SeederUser,
-		seeds.SeederGenre,
 	}
 
 	fmt.Println(mylog.ColorizeInfo("\n=========== Start Seeding ==========="))

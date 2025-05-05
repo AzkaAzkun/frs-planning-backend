@@ -1,8 +1,8 @@
 package main
 
 import (
-	"film-management-api-golang/cmd"
-	"film-management-api-golang/internal/config"
+	"frs-planning-backend/cmd"
+	"frs-planning-backend/internal/config"
 
 	"github.com/joho/godotenv"
 )

@@ -2,7 +2,7 @@ package myjwt
 
 import (
 	"errors"
-	myerror "film-management-api-golang/internal/pkg/error"
+	myerror "frs-planning-backend/internal/pkg/error"
 	"net/http"
 	"os"
 	"time"

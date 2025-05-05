@@ -3,12 +3,12 @@ package service
 import (
 	"context"
 	"errors"
-	"film-management-api-golang/internal/api/repository"
-	"film-management-api-golang/internal/dto"
-	"film-management-api-golang/internal/entity"
-	myerror "film-management-api-golang/internal/pkg/error"
-	myjwt "film-management-api-golang/internal/pkg/jwt"
-	"film-management-api-golang/internal/utils"
+	"frs-planning-backend/internal/api/repository"
+	"frs-planning-backend/internal/dto"
+	"frs-planning-backend/internal/entity"
+	myerror "frs-planning-backend/internal/pkg/error"
+	myjwt "frs-planning-backend/internal/pkg/jwt"
+	"frs-planning-backend/internal/utils"
 	"net/http"
 
 	"gorm.io/gorm"

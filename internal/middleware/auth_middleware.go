@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	myerror "film-management-api-golang/internal/pkg/error"
-	myjwt "film-management-api-golang/internal/pkg/jwt"
-	"film-management-api-golang/internal/pkg/response"
+	myerror "frs-planning-backend/internal/pkg/error"
+	myjwt "frs-planning-backend/internal/pkg/jwt"
+	"frs-planning-backend/internal/pkg/response"
 	"net/http"
 	"strings"
 

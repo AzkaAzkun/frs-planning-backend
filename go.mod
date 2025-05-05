@@ -1,4 +1,4 @@
-module film-management-api-golang
+module frs-planning-backend
 
 go 1.23.0
 

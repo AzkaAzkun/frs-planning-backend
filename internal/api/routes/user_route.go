@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"film-management-api-golang/internal/api/controller"
-	"film-management-api-golang/internal/middleware"
+	"frs-planning-backend/internal/api/controller"
+	"frs-planning-backend/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )

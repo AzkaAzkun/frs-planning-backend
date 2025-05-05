@@ -1,9 +1,9 @@
 package migrations
 
 import (
-	"film-management-api-golang/internal/entity"
-	mylog "film-management-api-golang/internal/pkg/logger"
 	"fmt"
+	"frs-planning-backend/internal/entity"
+	mylog "frs-planning-backend/internal/pkg/logger"
 
 	"gorm.io/gorm"
 )
@@ -19,13 +19,6 @@ func Migrate(db *gorm.DB) error {
 	//migrate table
 	if err := db.AutoMigrate(
 		entity.User{},
-		entity.Genre{},
-		entity.Film{},
-		entity.FilmGenre{},
-		entity.FilmImage{},
-		entity.FilmList{},
-		entity.Review{},
-		entity.Reaction{},
 	); err != nil {
 		return err
 	}

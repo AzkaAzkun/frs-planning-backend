@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"film-management-api-golang/internal/api/service"
-	"film-management-api-golang/internal/dto"
-	myerror "film-management-api-golang/internal/pkg/error"
-	"film-management-api-golang/internal/pkg/response"
-	"film-management-api-golang/internal/utils"
+	"frs-planning-backend/internal/api/service"
+	"frs-planning-backend/internal/dto"
+	myerror "frs-planning-backend/internal/pkg/error"
+	"frs-planning-backend/internal/pkg/response"
+	"frs-planning-backend/internal/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

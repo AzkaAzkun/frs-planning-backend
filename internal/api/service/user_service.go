@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"film-management-api-golang/internal/api/repository"
-	"film-management-api-golang/internal/dto"
+	"frs-planning-backend/internal/api/repository"
+	"frs-planning-backend/internal/dto"
 
 	"gorm.io/gorm"
 )
@@ -33,30 +33,10 @@ func (s *userService) GetById(ctx context.Context, userId string) (dto.UserRespo
 		return dto.UserResponse{}, err
 	}
 
-	var filmLists []dto.FilmListResponse
-	for _, filmlist := range user.FilmLists {
-		filmLists = append(filmLists, dto.FilmListResponse{
-			ID:         filmlist.ID.String(),
-			FilmTitle:  filmlist.Film.Title,
-			ListStatus: string(filmlist.ListStatus),
-		})
-	}
-
-	var reviewResponse []dto.ReviewResponse
-	for _, review := range user.Reviews {
-		reviewResponse = append(reviewResponse, dto.ReviewResponse{
-			Film:    review.Film.Title,
-			Rating:  review.Rating,
-			Comment: review.Comment,
-		})
-	}
-
 	return dto.UserResponse{
 		ID:          user.ID.String(),
 		Username:    user.Username,
 		DisplayName: user.DisplayName,
 		Bio:         user.Bio,
-		FilmLists:   filmLists,
-		Reviews:     reviewResponse,
 	}, nil
 }

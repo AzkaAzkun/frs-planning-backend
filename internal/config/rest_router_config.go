@@ -1,10 +1,10 @@
 package config
 
 import (
-	"film-management-api-golang/internal/middleware"
-	mylog "film-management-api-golang/internal/pkg/logger"
-	"film-management-api-golang/internal/pkg/response"
 	"fmt"
+	"frs-planning-backend/internal/middleware"
+	mylog "frs-planning-backend/internal/pkg/logger"
+	"frs-planning-backend/internal/pkg/response"
 	"net/http"
 	"os"
 	"runtime/debug"

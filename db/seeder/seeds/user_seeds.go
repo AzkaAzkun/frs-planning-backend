@@ -2,8 +2,8 @@ package seeds
 
 import (
 	"encoding/json"
-	"film-management-api-golang/internal/entity"
-	mylog "film-management-api-golang/internal/pkg/logger"
+	"frs-planning-backend/internal/entity"
+	mylog "frs-planning-backend/internal/pkg/logger"
 	"os"
 
 	"gorm.io/gorm"

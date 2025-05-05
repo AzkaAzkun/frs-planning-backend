@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"film-management-api-golang/db"
-	"film-management-api-golang/db/migrations"
-	seeders "film-management-api-golang/db/seeder"
-	mylog "film-management-api-golang/internal/pkg/logger"
 	"fmt"
+	"frs-planning-backend/db"
+	"frs-planning-backend/db/migrations"
+	seeders "frs-planning-backend/db/seeder"
+	mylog "frs-planning-backend/internal/pkg/logger"
 	"os"
 	"os/exec"
 	"runtime"

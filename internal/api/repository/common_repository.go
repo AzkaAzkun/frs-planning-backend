@@ -2,9 +2,9 @@ package repository
 
 import (
 	"errors"
-	mylog "film-management-api-golang/internal/pkg/logger"
-	"film-management-api-golang/internal/pkg/meta"
 	"fmt"
+	mylog "frs-planning-backend/internal/pkg/logger"
+	"frs-planning-backend/internal/pkg/meta"
 	"reflect"
 	"strings"
 

@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"film-management-api-golang/internal/utils"
+	"frs-planning-backend/internal/utils"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -30,9 +30,6 @@ type User struct {
 	DisplayName string    `json:"display_name"`
 	Bio         string    `json:"bio"`
 	Role        UserRole  `json:"role"`
-
-	FilmLists []FilmList `json:"film_lists" gorm:"foreignKey:UserId"`
-	Reviews   []Review   `json:"reviews" gorm:"foreignKey:UserId"`
 
 	Timestamp
 }

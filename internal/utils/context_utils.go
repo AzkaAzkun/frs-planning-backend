@@ -1,7 +1,7 @@
 package utils
 
 import (
-	myerror "film-management-api-golang/internal/pkg/error"
+	myerror "frs-planning-backend/internal/pkg/error"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
