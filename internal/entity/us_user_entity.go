@@ -27,9 +27,7 @@ type User struct {
 	Username    string    `json:"username"`
 	Email       string    `json:"email"`
 	Password    string    `json:"password"`
-	DisplayName string    `json:"display_name"`
-	Bio         string    `json:"bio"`
-	Role        UserRole  `json:"role"`
+	PhoneNumber string    `json:"phone_number"`
 
 	Timestamp
 }

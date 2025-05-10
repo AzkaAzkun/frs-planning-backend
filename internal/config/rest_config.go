@@ -21,7 +21,11 @@ type RestConfig struct {
 func NewRest() RestConfig {
 	db := db.New()
 	app := gin.Default()
+<<<<<<< HEAD
 	server := NewRouter(app)
+=======
+	server := NewRouter(app, db)
+>>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 	middleware := middleware.New(db)
 
 	var (
@@ -30,18 +34,40 @@ func NewRest() RestConfig {
 
 		//=========== (REPOSITORY) ===========//
 		userRepository repository.UserRepository = repository.NewUser(db)
+<<<<<<< HEAD
+=======
+		classRepository repository.ClassRepository = repository.NewClassRepository(db)
+		courseRepository repository.CourseRepository = repository.NewCourseRepository(db)
+>>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 
 		//=========== (SERVICE) ===========//
 		authService service.AuthService = service.NewAuth(userRepository, db)
 		userService service.UserService = service.NewUser(userRepository, db)
+<<<<<<< HEAD
+=======
+		classService service.ClassService = service.NewClassService(classRepository)
+		courseService service.CourseService = service.NewCourseService(courseRepository)
+>>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 
 		//=========== (CONTROLLER) ===========//
 		authController controller.AuthController = controller.NewAuth(authService)
 		userController controller.UserController = controller.NewUser(userService)
+<<<<<<< HEAD
 	)
 
 	routes.Auth(server, authController, middleware)
 	routes.User(server, userController, middleware)
+=======
+		classController controller.ClassController = controller.NewClassController(classService)
+		courseController controller.CourseController = controller.NewCourseController(courseService)
+	)
+
+	// Register all routes
+	routes.Auth(server, authController, middleware)
+	routes.User(server, userController, middleware)
+	routes.RegisterClassRoutes(server, db)  // This will use the classController internally
+	routes.RegisterCourseRoutes(server, db) // This will use the courseController internally
+>>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 	return RestConfig{
 		server: server,
 	}
