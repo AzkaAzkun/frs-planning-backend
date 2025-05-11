@@ -4,19 +4,19 @@ dep:
 	go mod tidy
 
 run: 
-	go run cmd/app/main.go
+	go run main.go
 
 # watch:
 # 	go run main.go --watch
 
 seeder:
-	go run cmd/migration/main.go --seeder
+	go run main.go --seeder
 
 migrate:
-	go run cmd/migration/main.go --migrate
+	go run main.go --migrate
 
 both:
-	go run cmd/migration/main.go --migrate --seeder
+	go run main.go --migrate --seeder
 
 # build: 
 # 	go build -o main main.go

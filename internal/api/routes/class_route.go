@@ -8,7 +8,7 @@ import (
 )
 
 func Class(router *gin.Engine, classController controller.ClassController, middleware middleware.Middleware) {
-	classRoutes := router.Group("/api/classes")
+	classRoutes := router.Group("/api/v1/classes")
 	{
 		classRoutes.POST("", middleware.Authenticate(), classController.CreateClass)
 		classRoutes.GET("", middleware.Authenticate(), classController.GetAllClasses)
