@@ -19,7 +19,7 @@ type (
 	}
 )
 
-func NewUser(userRepository repository.UserRepository,
+func NewUserService(userRepository repository.UserRepository,
 	db *gorm.DB) UserService {
 	return &userService{
 		userRepository: userRepository,
