@@ -2,23 +2,18 @@ package routes
 
 import (
 	"frs-planning-backend/internal/api/controller"
-	"frs-planning-backend/internal/api/repository"
-	"frs-planning-backend/internal/api/service"
+	"frs-planning-backend/internal/middleware"
+
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func RegisterClassRoutes(router *gin.Engine, db *gorm.DB) {
-	classRepo := repository.NewClassRepository(db)
-	classService := service.NewClassService(classRepo)
-	classController := controller.NewClassController(classService)
-
+func Class(router *gin.Engine, classController controller.ClassController, middleware middleware.Middleware) {
 	classRoutes := router.Group("/api/classes")
 	{
-		classRoutes.POST("", classController.CreateClass)
-		classRoutes.GET("", classController.GetAllClasses)
-		classRoutes.GET("/:id", classController.GetClassByID)
-		classRoutes.PUT("/:id", classController.UpdateClass)
-		classRoutes.DELETE("/:id", classController.DeleteClass)
+		classRoutes.POST("", middleware.Authenticate(), classController.CreateClass)
+		classRoutes.GET("", middleware.Authenticate(), classController.GetAllClasses)
+		classRoutes.GET("/:id", middleware.Authenticate(), classController.GetClassByID)
+		classRoutes.PUT("/:id", middleware.Authenticate(), classController.UpdateClass)
+		classRoutes.DELETE("/:id", middleware.Authenticate(), classController.DeleteClass)
 	}
 }

@@ -1,17 +1,19 @@
 package dto
 
-type CreateCourseRequest struct {
-	Name           string `json:"name" binding:"required"`
-	ClassSettingID int64  `json:"class_setting_id" binding:"required"`
-}
+type (
+	CreateCourseRequest struct {
+		Name           string `json:"name" binding:"required"`
+		ClassSettingID string `json:"class_setting_id" binding:"required,uuid"`
+	}
 
-type UpdateCourseRequest struct {
-	Name           string `json:"name" binding:"required"`
-	ClassSettingID int64  `json:"class_setting_id" binding:"required"`
-}
+	UpdateCourseRequest struct {
+		Name           string `json:"name" binding:"required"`
+		ClassSettingID string `json:"class_setting_id" binding:"required"`
+	}
 
-type CourseResponse struct {
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	ClassSettingID int64  `json:"class_setting_id"`
-}
+	CourseResponse struct {
+		ID             string `json:"id"`
+		Name           string `json:"name"`
+		ClassSettingID string `json:"class_setting_id"`
+	}
+)

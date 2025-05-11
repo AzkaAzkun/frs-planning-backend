@@ -2,10 +2,6 @@ package config
 
 import (
 	"fmt"
-<<<<<<< HEAD
-=======
-	"frs-planning-backend/internal/api/routes"
->>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 	"frs-planning-backend/internal/middleware"
 	mylog "frs-planning-backend/internal/pkg/logger"
 	"frs-planning-backend/internal/pkg/response"
@@ -14,16 +10,9 @@ import (
 	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
-<<<<<<< HEAD
 )
 
 func NewRouter(server *gin.Engine) *gin.Engine {
-=======
-	"gorm.io/gorm"
-)
-
-func NewRouter(server *gin.Engine, db *gorm.DB) *gin.Engine {
->>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 	server.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{
 			"status":  http.StatusNotFound,
@@ -41,13 +30,6 @@ func NewRouter(server *gin.Engine, db *gorm.DB) *gin.Engine {
 		})
 	})
 
-<<<<<<< HEAD
-=======
-	// Register routes for classes and courses
-	routes.RegisterClassRoutes(server, db)
-	routes.RegisterCourseRoutes(server, db)
-
->>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 	return server
 }
 
