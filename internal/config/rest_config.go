@@ -8,6 +8,7 @@ import (
 	"frs-planning-backend/internal/api/routes"
 	"frs-planning-backend/internal/api/service"
 	"frs-planning-backend/internal/middleware"
+	mailer "frs-planning-backend/internal/pkg/email"
 	"log"
 	"os"
 
@@ -26,7 +27,7 @@ func NewRest() RestConfig {
 
 	var (
 		//=========== (PACKAGE) ===========//
-		// mailerService mailer.Mailer         = mailer.New()
+		mailerService mailer.Mailer = mailer.New()
 
 		//=========== (REPOSITORY) ===========//
 		userRepository   repository.UserRepository   = repository.NewUserRepository(db)
@@ -34,7 +35,7 @@ func NewRest() RestConfig {
 		courseRepository repository.CourseRepository = repository.NewCourseRepository(db)
 
 		//=========== (SERVICE) ===========//
-		authService   service.AuthService   = service.NewAuthService(userRepository, db)
+		authService   service.AuthService   = service.NewAuthService(userRepository, mailerService, db)
 		userService   service.UserService   = service.NewUserService(userRepository, db)
 		classService  service.ClassService  = service.NewClassService(classRepository, db)
 		courseService service.CourseService = service.NewCourseService(courseRepository)

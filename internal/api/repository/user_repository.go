@@ -12,6 +12,7 @@ type (
 		Create(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error)
 		GetById(ctx context.Context, tx *gorm.DB, userId string) (entity.User, error)
 		GetByEmail(ctx context.Context, tx *gorm.DB, email string) (entity.User, error)
+		GetByUsername(ctx context.Context, tx *gorm.DB, username string) (entity.User, error)
 		Update(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error)
 	}
 
@@ -56,6 +57,19 @@ func (r *userRepository) GetByEmail(ctx context.Context, tx *gorm.DB, email stri
 
 	var user entity.User
 	if err := tx.WithContext(ctx).Take(&user, "email = ?", email).Error; err != nil {
+		return entity.User{}, err
+	}
+
+	return user, nil
+}
+
+func (r *userRepository) GetByUsername(ctx context.Context, tx *gorm.DB, username string) (entity.User, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var user entity.User
+	if err := tx.WithContext(ctx).Take(&user, "username = ?", username).Error; err != nil {
 		return entity.User{}, err
 	}
 

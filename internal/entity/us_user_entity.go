@@ -7,33 +7,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRole string
-
-const (
-	RoleAdmin UserRole = "ADMIN"
-	RoleUser  UserRole = "USER"
-)
-
-func (r UserRole) IsValid() bool {
-	switch r {
-	case RoleAdmin, RoleUser:
-		return true
-	}
-	return false
-}
-
 type User struct {
 	ID          uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
 	Username    string    `json:"username"`
 	Email       string    `json:"email"`
 	Password    string    `json:"password"`
+	IsVerified  bool      `json:"is_verified" gorm:"default:false"`
 	PhoneNumber string    `json:"phone_number"`
 
 	Timestamp
 }
 
 func (u *User) TableName() string {
-	return "us_users"
+	return "users"
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
