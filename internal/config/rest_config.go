@@ -29,13 +29,13 @@ func NewRest() RestConfig {
 		// mailerService mailer.Mailer         = mailer.New()
 
 		//=========== (REPOSITORY) ===========//
-		userRepository   repository.UserRepository   = repository.NewUser(db)
+		userRepository   repository.UserRepository   = repository.NewUserRepository(db)
 		classRepository  repository.ClassRepository  = repository.NewClassRepository(db)
 		courseRepository repository.CourseRepository = repository.NewCourseRepository(db)
 
 		//=========== (SERVICE) ===========//
-		authService   service.AuthService   = service.NewAuth(userRepository, db)
-		userService   service.UserService   = service.NewUser(userRepository, db)
+		authService   service.AuthService   = service.NewAuthService(userRepository, db)
+		userService   service.UserService   = service.NewUserService(userRepository, db)
 		classService  service.ClassService  = service.NewClassService(classRepository, db)
 		courseService service.CourseService = service.NewCourseService(courseRepository)
 

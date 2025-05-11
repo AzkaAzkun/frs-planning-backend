@@ -27,7 +27,7 @@ type (
 	}
 )
 
-func NewAuth(userRepository repository.UserRepository,
+func NewAuthService(userRepository repository.UserRepository,
 	db *gorm.DB) AuthService {
 	return &authService{
 		userRepository: userRepository,

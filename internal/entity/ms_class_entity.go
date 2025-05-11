@@ -12,6 +12,8 @@ type Class struct {
 	CourseID      uuid.UUID `json:"course_id"`
 	ClassSchedule time.Time `json:"class_schedule"`
 	Priority      int       `json:"priority"`
+
+	Timestamp
 }
 
 func (Class) TableName() string {
