@@ -3,8 +3,9 @@ package controller
 import (
 	"frs-planning-backend/internal/api/service"
 	"frs-planning-backend/internal/dto"
+	"frs-planning-backend/internal/pkg/response"
+
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type CourseController interface {
@@ -28,43 +29,38 @@ func NewCourseController(courseService service.CourseService) CourseController {
 func (ctrl *courseController) CreateCourse(c *gin.Context) {
 	var request dto.CreateCourseRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response.NewFailed("failed get data from request", err).Send(c)
 		return
 	}
 
-	if err := ctrl.courseService.CreateCourse(&request); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	res, err := ctrl.courseService.CreateCourse(c.Request.Context(), request)
+	if err != nil {
+		response.NewFailed("failed create course", err).Send(c)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Course created successfully"})
+	response.NewSuccess("success create course", res).Send(c)
 }
 
 func (ctrl *courseController) GetAllCourses(c *gin.Context) {
-	courses, err := ctrl.courseService.GetAllCourses()
+	courses, err := ctrl.courseService.GetAllCourses(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.NewFailed("failed get all courses", err).Send(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, courses)
+	response.NewSuccess("success get all courses", courses).Send(c)
 }
 
 func (ctrl *courseController) GetCourseByID(c *gin.Context) {
 	id := c.Param("id")
-
-	course, err := ctrl.courseService.GetCourseByID(id)
+	course, err := ctrl.courseService.GetCourseByID(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.NewFailed("failed get course by id", err).Send(c)
 		return
 	}
 
-	if course == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Course not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, course)
+	response.NewSuccess("success get course by id", course).Send(c)
 }
 
 func (ctrl *courseController) UpdateCourse(c *gin.Context) {
@@ -72,25 +68,25 @@ func (ctrl *courseController) UpdateCourse(c *gin.Context) {
 
 	var request dto.UpdateCourseRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response.NewFailed("failed get data from request", err).Send(c)
 		return
 	}
 
-	if err := ctrl.courseService.UpdateCourse(id, &request); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := ctrl.courseService.UpdateCourse(c.Request.Context(), id, request); err != nil {
+		response.NewFailed("failed update course by id", err).Send(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Course updated successfully"})
+	response.NewSuccess("success update course by id", nil).Send(c)
 }
 
 func (ctrl *courseController) DeleteCourse(c *gin.Context) {
 	id := c.Param("id")
 
-	if err := ctrl.courseService.DeleteCourse(id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := ctrl.courseService.DeleteCourse(c.Request.Context(), id); err != nil {
+		response.NewFailed("failed delete course by id", err).Send(c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Course deleted successfully"})
+	response.NewSuccess("success delete course by id", nil).Send(c)
 }

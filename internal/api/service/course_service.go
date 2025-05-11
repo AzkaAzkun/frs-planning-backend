@@ -1,17 +1,20 @@
 package service
 
 import (
+	"context"
 	"frs-planning-backend/internal/api/repository"
 	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
+
+	"github.com/google/uuid"
 )
 
 type CourseService interface {
-	CreateCourse(req *dto.CreateCourseRequest) error
-	GetAllCourses() ([]dto.CourseResponse, error)
-	GetCourseByID(id string) (*dto.CourseResponse, error)
-	UpdateCourse(id string, req *dto.UpdateCourseRequest) error
-	DeleteCourse(id string) error
+	CreateCourse(ctx context.Context, req dto.CreateCourseRequest) (dto.CourseResponse, error)
+	GetAllCourses(ctx context.Context) ([]dto.CourseResponse, error)
+	GetCourseByID(ctx context.Context, id string) (dto.CourseResponse, error)
+	UpdateCourse(ctx context.Context, id string, req dto.UpdateCourseRequest) error
+	DeleteCourse(ctx context.Context, id string) error
 }
 
 type courseService struct {
@@ -24,17 +27,24 @@ func NewCourseService(courseRepo repository.CourseRepository) CourseService {
 	}
 }
 
-func (s *courseService) CreateCourse(req *dto.CreateCourseRequest) error {
-	course := &entity.Course{
+func (s *courseService) CreateCourse(ctx context.Context, req dto.CreateCourseRequest) (dto.CourseResponse, error) {
+	createResult, err := s.courseRepo.Create(ctx, nil, entity.Course{
 		Name:           req.Name,
-		ClassSettingID: req.ClassSettingID,
+		ClassSettingID: uuid.MustParse(req.ClassSettingID),
+	})
+	if err != nil {
+		return dto.CourseResponse{}, err
 	}
 
-	return s.courseRepo.Create(course)
+	return dto.CourseResponse{
+		ID:             createResult.ID.String(),
+		Name:           createResult.Name,
+		ClassSettingID: createResult.ClassSettingID.String(),
+	}, nil
 }
 
-func (s *courseService) GetAllCourses() ([]dto.CourseResponse, error) {
-	courses, err := s.courseRepo.FindAll()
+func (s *courseService) GetAllCourses(ctx context.Context) ([]dto.CourseResponse, error) {
+	courses, err := s.courseRepo.FindAll(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -42,41 +52,46 @@ func (s *courseService) GetAllCourses() ([]dto.CourseResponse, error) {
 	var responses []dto.CourseResponse
 	for _, course := range courses {
 		responses = append(responses, dto.CourseResponse{
-			ID:             course.ID,
+			ID:             course.ID.String(),
 			Name:           course.Name,
-			ClassSettingID: course.ClassSettingID,
+			ClassSettingID: course.ClassSettingID.String(),
 		})
 	}
 
 	return responses, nil
 }
 
-func (s *courseService) GetCourseByID(id string) (*dto.CourseResponse, error) {
-	course, err := s.courseRepo.FindByID(id)
+func (s *courseService) GetCourseByID(ctx context.Context, id string) (dto.CourseResponse, error) {
+	course, err := s.courseRepo.FindByID(ctx, nil, id)
 	if err != nil {
-		return nil, err
-	}
-	if course == nil {
-		return nil, nil
+		return dto.CourseResponse{}, err
 	}
 
-	return &dto.CourseResponse{
-		ID:             course.ID,
+	return dto.CourseResponse{
+		ID:             course.ID.String(),
 		Name:           course.Name,
-		ClassSettingID: course.ClassSettingID,
+		ClassSettingID: course.ClassSettingID.String(),
 	}, nil
 }
 
-func (s *courseService) UpdateCourse(id string, req *dto.UpdateCourseRequest) error {
-	course := &entity.Course{
-		ID:             id,
+func (s *courseService) UpdateCourse(ctx context.Context, id string, req dto.UpdateCourseRequest) error {
+	course := entity.Course{
+		ID:             uuid.MustParse(id),
 		Name:           req.Name,
-		ClassSettingID: req.ClassSettingID,
+		ClassSettingID: uuid.MustParse(req.ClassSettingID),
 	}
 
-	return s.courseRepo.Update(course)
+	if err := s.courseRepo.Update(ctx, nil, course); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (s *courseService) DeleteCourse(id string) error {
-	return s.courseRepo.Delete(id)
+func (s *courseService) DeleteCourse(ctx context.Context, id string) error {
+	if err := s.courseRepo.Delete(ctx, nil, id); err != nil {
+		return err
+	}
+
+	return nil
 }

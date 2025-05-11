@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"frs-planning-backend/internal/entity"
-	mylog "frs-planning-backend/internal/pkg/logger"
 
 	"gorm.io/gorm"
 )
@@ -27,7 +26,6 @@ func NewUser(db *gorm.DB) UserRepository {
 }
 
 func (r *userRepository) Create(ctx context.Context, tx *gorm.DB, user entity.User) (entity.User, error) {
-	mylog.Infoln(user)
 	if tx == nil {
 		tx = r.db
 	}
@@ -35,7 +33,7 @@ func (r *userRepository) Create(ctx context.Context, tx *gorm.DB, user entity.Us
 	if err := tx.WithContext(ctx).Create(&user).Error; err != nil {
 		return user, err
 	}
-	mylog.Infoln(user)
+
 	return user, nil
 }
 
