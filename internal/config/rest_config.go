@@ -29,21 +29,27 @@ func NewRest() RestConfig {
 		// mailerService mailer.Mailer         = mailer.New()
 
 		//=========== (REPOSITORY) ===========//
-		userRepository   repository.UserRepository   = repository.NewUserRepository(db)
-		classRepository  repository.ClassRepository  = repository.NewClassRepository(db)
-		courseRepository repository.CourseRepository = repository.NewCourseRepository(db)
+		userRepository                  repository.UserRepository                  = repository.NewUserRepository(db)
+		classRepository                 repository.ClassRepository                 = repository.NewClassRepository(db)
+		courseRepository                repository.CourseRepository                = repository.NewCourseRepository(db)
+		workspaceRepository             repository.WorkspaceRepository             = repository.NewWorkspaceRepository(db)
+		workspaceCollaboratorRepository repository.WorkspaceCollaboratorRepository = repository.NewWOrkspaceCollaboratorRepository(db)
 
 		//=========== (SERVICE) ===========//
-		authService   service.AuthService   = service.NewAuthService(userRepository, db)
-		userService   service.UserService   = service.NewUserService(userRepository, db)
-		classService  service.ClassService  = service.NewClassService(classRepository, db)
-		courseService service.CourseService = service.NewCourseService(courseRepository)
+		authService                  service.AuthService                   = service.NewAuthService(userRepository, db)
+		userService                  service.UserService                   = service.NewUserService(userRepository, db)
+		classService                 service.ClassService                  = service.NewClassService(classRepository, db)
+		courseService                service.CourseService                 = service.NewCourseService(courseRepository)
+		workspaceService             service.WorkspaceService              = service.NewWorkspaceService(workspaceRepository, db)
+		workspaceCollaboratorService service.WorskspaceCollaboratorService = service.NewWorkspaceCollaboratorService(workspaceCollaboratorRepository, userRepository, db)
 
 		//=========== (CONTROLLER) ===========//
-		authController   controller.AuthController   = controller.NewAuth(authService)
-		userController   controller.UserController   = controller.NewUser(userService)
-		classController  controller.ClassController  = controller.NewClassController(classService)
-		courseController controller.CourseController = controller.NewCourseController(courseService)
+		authController                  controller.AuthController                  = controller.NewAuth(authService)
+		userController                  controller.UserController                  = controller.NewUser(userService)
+		classController                 controller.ClassController                 = controller.NewClassController(classService)
+		courseController                controller.CourseController                = controller.NewCourseController(courseService)
+		workspaceController             controller.WorkspaceController             = controller.NewWorkspace(workspaceService)
+		workspaceCollaboratorController controller.WorkspaceCollaboratorController = controller.NewWorkspaceCOllaborator(workspaceCollaboratorService)
 	)
 
 	// Register all routes
@@ -51,6 +57,8 @@ func NewRest() RestConfig {
 	routes.User(server, userController, middleware)
 	routes.Class(server, classController, middleware)
 	routes.Course(server, courseController, middleware)
+	routes.Workspace(server, workspaceController, middleware)
+	routes.WorkspaceCollaborator(server, workspaceCollaboratorController, middleware)
 	return RestConfig{
 		server: server,
 	}
