@@ -27,7 +27,7 @@ type (
 	}
 )
 
-func NewAuth(userRepository repository.UserRepository,
+func NewAuthService(userRepository repository.UserRepository,
 	db *gorm.DB) AuthService {
 	return &authService{
 		userRepository: userRepository,
@@ -41,18 +41,11 @@ func (s *authService) Register(ctx context.Context, req dto.RegisterRequest) (dt
 		return dto.RegisterResponse{}, myerror.New("user with this email already exist", http.StatusConflict)
 	}
 
-	// hashPassword, err := utils.HashPassword(req.Password)
-	// if err != nil {
-	// 	return dto.RegisterResponse{}, err
-	// }
-
 	createResult, err := s.userRepository.Create(ctx, nil, entity.User{
 		Username:    req.Username,
 		Email:       req.Email,
 		Password:    req.Password,
-		DisplayName: req.DisplayName,
-		Bio:         req.Bio,
-		Role:        entity.RoleUser,
+		PhoneNumber: req.PhoneNumber,
 	})
 	if err != nil {
 		return dto.RegisterResponse{}, err
@@ -62,8 +55,7 @@ func (s *authService) Register(ctx context.Context, req dto.RegisterRequest) (dt
 		ID:          createResult.ID.String(),
 		Username:    createResult.Username,
 		Email:       createResult.Email,
-		DisplayName: createResult.DisplayName,
-		Bio:         createResult.Bio,
+		PhoneNumber: createResult.PhoneNumber,
 	}, nil
 }
 
@@ -84,7 +76,6 @@ func (s *authService) Login(ctx context.Context, req dto.LoginRequest) (dto.Logi
 	token, err := myjwt.GenerateToken(map[string]string{
 		"user_id": user.ID.String(),
 		"email":   user.Email,
-		"role":    string(user.Role),
 	}, 24)
 	if err != nil {
 		return dto.LoginResponse{}, err
@@ -92,7 +83,6 @@ func (s *authService) Login(ctx context.Context, req dto.LoginRequest) (dto.Logi
 
 	return dto.LoginResponse{
 		Token: token,
-		Role:  string(user.Role),
 	}, nil
 }
 
@@ -107,9 +97,7 @@ func (s *authService) GetMe(ctx context.Context, userId string) (dto.GetMe, erro
 			ID:          userId,
 			Username:    user.Username,
 			Email:       user.Email,
-			DisplayName: user.DisplayName,
-			Bio:         user.Bio,
-			Role:        string(user.Role),
+			PhoneNumber: user.PhoneNumber,
 		},
 	}, nil
 }

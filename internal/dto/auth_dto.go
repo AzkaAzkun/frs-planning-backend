@@ -19,8 +19,6 @@ type (
 		ID          string `json:"id"`
 		Username    string `json:"username"`
 		Email       string `json:"email"`
-		DisplayName string `json:"display_name"`
-		Bio         string `json:"bio"`
-		Role        string `json:"role"`
+		PhoneNumber string `json:"phone_number"`
 	}
 )

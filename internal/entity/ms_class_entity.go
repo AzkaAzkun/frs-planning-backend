@@ -1,13 +1,19 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Class struct {
-	ID            int64     `json:"id" gorm:"primaryKey"`
+	ID            uuid.UUID `json:"id" gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
 	Lecturer      string    `json:"lecturer"`
-	CourseID      string    `json:"course_id"`
+	CourseID      uuid.UUID `json:"course_id"`
 	ClassSchedule time.Time `json:"class_schedule"`
 	Priority      int       `json:"priority"`
+
+	Timestamp
 }
 
 func (Class) TableName() string {

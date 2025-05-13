@@ -19,7 +19,7 @@ type (
 	}
 )
 
-func NewUser(userRepository repository.UserRepository,
+func NewUserService(userRepository repository.UserRepository,
 	db *gorm.DB) UserService {
 	return &userService{
 		userRepository: userRepository,
@@ -28,15 +28,15 @@ func NewUser(userRepository repository.UserRepository,
 }
 
 func (s *userService) GetById(ctx context.Context, userId string) (dto.UserResponse, error) {
-	user, err := s.userRepository.GetByIdWithFilmList(ctx, nil, userId)
-	if err != nil {
-		return dto.UserResponse{}, err
-	}
+	// user, err := s.userRepository.GetByIdWithFilmList(ctx, nil, userId)
+	// if err != nil {
+	// 	return dto.UserResponse{}, err
+	// }
 
-	return dto.UserResponse{
-		ID:          user.ID.String(),
-		Username:    user.Username,
-		DisplayName: user.DisplayName,
-		Bio:         user.Bio,
-	}, nil
+	// return dto.UserResponse{
+	// 	ID:          user.ID.String(),
+	// 	Username:    user.Username,
+	// 	PhoneNumber: us,
+	// }, nil
+	return dto.UserResponse{}, nil
 }

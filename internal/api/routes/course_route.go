@@ -2,17 +2,12 @@ package routes
 
 import (
 	"frs-planning-backend/internal/api/controller"
-	"frs-planning-backend/internal/api/repository"
-	"frs-planning-backend/internal/api/service"
+	"frs-planning-backend/internal/middleware"
+
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func RegisterCourseRoutes(router *gin.Engine, db *gorm.DB) {
-	courseRepo := repository.NewCourseRepository(db)
-	courseService := service.NewCourseService(courseRepo)
-	courseController := controller.NewCourseController(courseService)
-
+func Course(router *gin.Engine, courseController controller.CourseController, middleware middleware.Middleware) {
 	courseRoutes := router.Group("/api/courses")
 	{
 		courseRoutes.POST("", courseController.CreateCourse)

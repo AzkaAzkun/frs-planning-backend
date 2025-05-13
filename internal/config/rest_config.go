@@ -29,19 +29,28 @@ func NewRest() RestConfig {
 		// mailerService mailer.Mailer         = mailer.New()
 
 		//=========== (REPOSITORY) ===========//
-		userRepository repository.UserRepository = repository.NewUser(db)
+		userRepository   repository.UserRepository   = repository.NewUserRepository(db)
+		classRepository  repository.ClassRepository  = repository.NewClassRepository(db)
+		courseRepository repository.CourseRepository = repository.NewCourseRepository(db)
 
 		//=========== (SERVICE) ===========//
-		authService service.AuthService = service.NewAuth(userRepository, db)
-		userService service.UserService = service.NewUser(userRepository, db)
+		authService   service.AuthService   = service.NewAuthService(userRepository, db)
+		userService   service.UserService   = service.NewUserService(userRepository, db)
+		classService  service.ClassService  = service.NewClassService(classRepository, db)
+		courseService service.CourseService = service.NewCourseService(courseRepository)
 
 		//=========== (CONTROLLER) ===========//
-		authController controller.AuthController = controller.NewAuth(authService)
-		userController controller.UserController = controller.NewUser(userService)
+		authController   controller.AuthController   = controller.NewAuth(authService)
+		userController   controller.UserController   = controller.NewUser(userService)
+		classController  controller.ClassController  = controller.NewClassController(classService)
+		courseController controller.CourseController = controller.NewCourseController(courseService)
 	)
 
+	// Register all routes
 	routes.Auth(server, authController, middleware)
 	routes.User(server, userController, middleware)
+	routes.Class(server, classController, middleware)
+	routes.Course(server, courseController, middleware)
 	return RestConfig{
 		server: server,
 	}

@@ -22,7 +22,7 @@ func Migrate(db *gorm.DB) error {
 		entity.Course{},
 		entity.Class{},
 		entity.Workspace{},
-		entity.WorkspaceColaborator{},
+		entity.WorkspaceCollaborator{},
 		entity.Plan{},
 		entity.PlanSettings{},
 		entity.ClassSettings{},
