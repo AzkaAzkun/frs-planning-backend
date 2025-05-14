@@ -2,8 +2,7 @@ package dto
 
 type (
 	CreateWorkspaceRequest struct {
-		UserID string `json:"user_id" binding:"required"`
-		Name   string `json:"name" binding:"required"`
+		Name string `json:"name" binding:"required"`
 	}
 
 	UpdateWorkspaceRequest struct {
