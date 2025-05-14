@@ -12,6 +12,7 @@ type (
 	WorkspaceRepository interface {
 		Create(ctx context.Context, tx *gorm.DB, workspace entity.Workspace, userid uuid.UUID) (entity.Workspace, error)
 		Find(ctx context.Context, tx *gorm.DB, workspace uuid.UUID) (entity.Workspace, error)
+		Get(ctx context.Context, tx *gorm.DB, userid uuid.UUID) ([]entity.Workspace, error)
 		Update(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID, name string) (entity.Workspace, error)
 		Delete(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID) (entity.Workspace, error)
 	}
@@ -59,6 +60,27 @@ func (r *workspaceRepository) Find(ctx context.Context, tx *gorm.DB, workspaceid
 	}
 
 	return workspace, nil
+}
+
+func (r *workspaceRepository) Get(ctx context.Context, tx *gorm.DB, userid uuid.UUID) ([]entity.Workspace, error) {
+	if tx == nil {
+		tx = r.db
+	}
+	var workspaceIDs []uuid.UUID
+	if err := tx.WithContext(ctx).
+		Model(&entity.WorkspaceCollaborator{}).
+		Where("user_id = ?", userid).
+		Pluck("workspace_id", &workspaceIDs).Error; err != nil {
+		return []entity.Workspace{}, err
+	}
+	var userWorkspaces []entity.Workspace
+	if err := tx.WithContext(ctx).
+		Where("id IN ?", workspaceIDs).
+		Find(&userWorkspaces).Error; err != nil {
+		return []entity.Workspace{}, err
+	}
+
+	return userWorkspaces, nil
 }
 
 func (r *workspaceRepository) Update(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID, name string) (entity.Workspace, error) {
