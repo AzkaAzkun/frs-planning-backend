@@ -12,8 +12,9 @@ import (
 
 type (
 	WorkspaceService interface {
-		Create(ctx context.Context, req dto.CreateWorkspaceRequest) (dto.WorkspaceResponse, error)
+		Create(ctx context.Context, req dto.CreateWorkspaceRequest, userid string) (dto.WorkspaceResponse, error)
 		Find(ctx context.Context, workspaceid uuid.UUID) (dto.WorkspaceResponse, error)
+		Get(ctx context.Context, userid string) ([]dto.WorkspaceResponse, error)
 		Update(ctx context.Context, req dto.UpdateWorkspaceRequest) (dto.WorkspaceResponse, error)
 		Delete(ctx context.Context, req dto.DeleteWorkspaceRequest) (dto.WorkspaceResponse, error)
 	}
@@ -31,16 +32,12 @@ func NewWorkspaceService(workRepository repository.WorkspaceRepository, db *gorm
 	}
 }
 
-func (s *workspaceService) Create(ctx context.Context, req dto.CreateWorkspaceRequest) (dto.WorkspaceResponse, error) {
-	userUUID, err := uuid.Parse(req.UserID)
-	if err != nil {
-		return dto.WorkspaceResponse{}, err
-	}
+func (s *workspaceService) Create(ctx context.Context, req dto.CreateWorkspaceRequest, userid string) (dto.WorkspaceResponse, error) {
 
 	workspace, err := s.workspaceRepo.Create(ctx, nil, entity.Workspace{
-		Name: req.Name,
-		//class setting blom ada
-	}, userUUID)
+		Name:           req.Name,
+		ClassSettingID: nil,
+	}, uuid.MustParse(userid))
 	if err != nil {
 		return dto.WorkspaceResponse{}, err
 	}
@@ -62,6 +59,25 @@ func (s *workspaceService) Find(ctx context.Context, workspaceid uuid.UUID) (dto
 		ID:   workspace.ID.String(),
 		Name: workspace.Name,
 	}, nil
+}
+
+func (s *workspaceService) Get(ctx context.Context, userid string) ([]dto.WorkspaceResponse, error) {
+
+	userWorkspaces, err := s.workspaceRepo.Get(ctx, nil, uuid.MustParse(userid))
+	if err != nil {
+		return []dto.WorkspaceResponse{}, err
+	}
+
+	// Map only id and name to the DTO
+	var responses []dto.WorkspaceResponse
+	for _, w := range userWorkspaces {
+		responses = append(responses, dto.WorkspaceResponse{
+			ID:   w.ID.String(),
+			Name: w.Name,
+		})
+	}
+
+	return responses, nil
 }
 
 func (s *workspaceService) Update(ctx context.Context, req dto.UpdateWorkspaceRequest) (dto.WorkspaceResponse, error) {
