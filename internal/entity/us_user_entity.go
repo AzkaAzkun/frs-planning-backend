@@ -16,7 +16,7 @@ type User struct {
 	PhoneNumber string    `json:"phone_number"`
 	DisplayName string    `json:"display_name"`
 	Bio         string    `json:"bio"`
-	Role        UserRole  `json:"role"`
+	Role        string    `json:"role"`
 	Timestamp
 }
 
