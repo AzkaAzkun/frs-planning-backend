@@ -10,10 +10,10 @@ import (
 func Workspace(app *gin.Engine, workspaceController controller.WorkspaceController, middleware middleware.Middleware) {
 	routes := app.Group("/api/v1/workspace")
 	{
-		routes.POST("/create", workspaceController.CreateWorkspace)
-		routes.GET("/:workspaceid", workspaceController.FindWorkspace)
-		routes.PUT("/update", workspaceController.UpdateWorkspace)
-		routes.DELETE("/delete", workspaceController.DeleteWorkspace)
+		routes.POST("/create", middleware.Authenticate(), workspaceController.CreateWorkspace)
+		routes.GET("/:workspaceid", middleware.Authenticate(), workspaceController.FindWorkspace)
+		routes.PUT("/update", middleware.Authenticate(), workspaceController.UpdateWorkspace)
+		routes.DELETE("/delete", middleware.Authenticate(), workspaceController.DeleteWorkspace)
 	}
 
 }
