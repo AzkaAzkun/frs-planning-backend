@@ -8,7 +8,7 @@ import (
 )
 
 func Course(router *gin.Engine, courseController controller.CourseController, middleware middleware.Middleware) {
-	courseRoutes := router.Group("/api/courses")
+	courseRoutes := router.Group("/api/v1/courses")
 	{
 		courseRoutes.POST("", courseController.CreateCourse)
 		courseRoutes.GET("", courseController.GetAllCourses)
