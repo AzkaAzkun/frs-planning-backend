@@ -3,10 +3,16 @@ package entity
 import "github.com/google/uuid"
 
 type PermissionClassSetting string
+type PermissionClassStatus string
 
 const (
 	ClassSettingPublic  PermissionClassSetting = "PUBLIC"
 	ClassSettingPrivate PermissionClassSetting = "PRIVATE"
+)
+
+const (
+	ClassSettingOwn   PermissionClassStatus = "OWN"
+	ClassSettingClone PermissionClassStatus = "CLONE"
 )
 
 type ClassSettings struct {
@@ -14,7 +20,8 @@ type ClassSettings struct {
 	UserID     uuid.UUID `json:"user_id"`
 	Permission string    `json:"permission"`
 	Used       int       `json:"used"`
-
+	Status     string    `json:"status"`
+	Name       string    `json:"name"`
 	Timestamp
 }
 
