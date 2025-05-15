@@ -4,6 +4,7 @@ import (
 	"frs-planning-backend/internal/api/service"
 	"frs-planning-backend/internal/dto"
 	myerror "frs-planning-backend/internal/pkg/error"
+	"frs-planning-backend/internal/pkg/meta"
 	"frs-planning-backend/internal/pkg/response"
 	"net/http"
 
@@ -55,7 +56,7 @@ func (c *workspaceController) CreateWorkspace(ctx *gin.Context) {
 }
 
 func (c *workspaceController) FindWorkspace(ctx *gin.Context) {
-	workspaceid := ctx.Param("workspaceid")
+	workspaceid := ctx.Param("id")
 
 	workspaceUUID, err := uuid.Parse(workspaceid)
 	if err != nil {
@@ -82,12 +83,13 @@ func (c *workspaceController) GetWorkspace(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID format"})
 		return
 	}
-	workspaces, err := c.workspaceService.Get(ctx, uidStr)
+	workspaces, err := c.workspaceService.Get(ctx, uidStr, meta.New(ctx))
 	if err != nil {
 		response.NewFailed("Failed to get all the workspaces", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
 		return
 	}
-	response.NewSuccess("Success to get workspaces", workspaces)
+
+	response.NewSuccess("Success to get workspaces", workspaces.Workspaces, workspaces.Meta).Send(ctx)
 }
 
 func (c *workspaceController) UpdateWorkspace(ctx *gin.Context) {
@@ -105,12 +107,8 @@ func (c *workspaceController) UpdateWorkspace(ctx *gin.Context) {
 }
 
 func (c *workspaceController) DeleteWorkspace(ctx *gin.Context) {
-	var req dto.DeleteWorkspaceRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		response.NewFailed("Failed get data from body", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
-		return
-	}
-	workspace, err := c.workspaceService.Delete(ctx, req)
+	workspaceid := ctx.Param("id")
+	workspace, err := c.workspaceService.Delete(ctx, workspaceid)
 	if err != nil {
 		response.NewFailed("Failed to delete workspace", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
 		return

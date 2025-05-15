@@ -6,8 +6,8 @@ dep:
 run: 
 	go run main.go
 
-# watch:
-# 	go run main.go --watch
+watch:
+	go run main.go --watch
 
 seeder:
 	go run main.go --seeder

@@ -14,9 +14,6 @@ type User struct {
 	Password    string    `json:"password"`
 	IsVerified  bool      `json:"is_verified" gorm:"default:false"`
 	PhoneNumber string    `json:"phone_number"`
-	DisplayName string    `json:"display_name"`
-	Bio         string    `json:"bio"`
-	Role        string    `json:"role"`
 	Timestamp
 }
 
