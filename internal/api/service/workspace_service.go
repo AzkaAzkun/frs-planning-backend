@@ -5,6 +5,7 @@ import (
 	"frs-planning-backend/internal/api/repository"
 	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
+	"frs-planning-backend/internal/pkg/meta"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -14,9 +15,9 @@ type (
 	WorkspaceService interface {
 		Create(ctx context.Context, req dto.CreateWorkspaceRequest, userid string) (dto.WorkspaceResponse, error)
 		Find(ctx context.Context, workspaceid uuid.UUID) (dto.WorkspaceResponse, error)
-		Get(ctx context.Context, userid string) ([]dto.WorkspaceResponse, error)
+		Get(ctx context.Context, userid string, metaReq meta.Meta) (dto.GetAllWorkspaceResponse, error)
 		Update(ctx context.Context, req dto.UpdateWorkspaceRequest) (dto.WorkspaceResponse, error)
-		Delete(ctx context.Context, req dto.DeleteWorkspaceRequest) (dto.WorkspaceResponse, error)
+		Delete(ctx context.Context, req string) (dto.WorkspaceResponse, error)
 	}
 
 	workspaceService struct {
@@ -61,23 +62,25 @@ func (s *workspaceService) Find(ctx context.Context, workspaceid uuid.UUID) (dto
 	}, nil
 }
 
-func (s *workspaceService) Get(ctx context.Context, userid string) ([]dto.WorkspaceResponse, error) {
-
-	userWorkspaces, err := s.workspaceRepo.Get(ctx, nil, uuid.MustParse(userid))
+func (s *workspaceService) Get(ctx context.Context, userid string, metaReq meta.Meta) (dto.GetAllWorkspaceResponse, error) {
+	userWorkspaces, err := s.workspaceRepo.Get(ctx, nil, uuid.MustParse(userid), metaReq)
 	if err != nil {
-		return []dto.WorkspaceResponse{}, err
+		return dto.GetAllWorkspaceResponse{}, err
 	}
 
 	// Map only id and name to the DTO
 	var responses []dto.WorkspaceResponse
-	for _, w := range userWorkspaces {
+	for _, w := range userWorkspaces.Workspaces {
 		responses = append(responses, dto.WorkspaceResponse{
 			ID:   w.ID.String(),
 			Name: w.Name,
 		})
 	}
 
-	return responses, nil
+	return dto.GetAllWorkspaceResponse{
+		Workspaces: responses,
+		Meta:       userWorkspaces.Meta,
+	}, nil
 }
 
 func (s *workspaceService) Update(ctx context.Context, req dto.UpdateWorkspaceRequest) (dto.WorkspaceResponse, error) {
@@ -95,8 +98,8 @@ func (s *workspaceService) Update(ctx context.Context, req dto.UpdateWorkspaceRe
 	}, nil
 }
 
-func (s *workspaceService) Delete(ctx context.Context, req dto.DeleteWorkspaceRequest) (dto.WorkspaceResponse, error) {
-	workspaceUUID, err := uuid.Parse(req.ID)
+func (s *workspaceService) Delete(ctx context.Context, id string) (dto.WorkspaceResponse, error) {
+	workspaceUUID, err := uuid.Parse(id)
 	if err != nil {
 		return dto.WorkspaceResponse{}, err
 	}

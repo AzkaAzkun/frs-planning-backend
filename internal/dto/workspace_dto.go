@@ -1,5 +1,10 @@
 package dto
 
+import (
+	"frs-planning-backend/internal/entity"
+	"frs-planning-backend/internal/pkg/meta"
+)
+
 type (
 	CreateWorkspaceRequest struct {
 		Name string `json:"name" binding:"required"`
@@ -11,8 +16,17 @@ type (
 	}
 
 	DeleteWorkspaceRequest struct {
-		ID   string `json:"id" binding:"required"`
-		Name string `json:"name" binding:"required"`
+		ID string `json:"id" binding:"required"`
+	}
+
+	GetAllWorkspaceResponse struct {
+		Workspaces []WorkspaceResponse `json:"workspaces"`
+		Meta       meta.Meta           `json:"meta"`
+	}
+
+	GetAllWorkspace struct {
+		Workspaces []entity.Workspace `json:"workspaces"`
+		Meta       meta.Meta          `json:"meta"`
 	}
 
 	WorkspaceResponse struct {
