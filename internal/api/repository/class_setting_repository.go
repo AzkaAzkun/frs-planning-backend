@@ -44,10 +44,16 @@ func (r *classSettingRepository) Clone(ctx context.Context, tx *gorm.DB, userID 
 	}
 
 	newClassSetting := entity.ClassSettings{
+
+		UserID:     userID,
+		Permission: "PRIVATE",
+		// Name and Status fields removed as they do not exist in the database schema
+
 		Name:       originalClassSetting.Name,
 		UserID:     userID,
 		Permission: "PRIVATE",
 		Status:     "CLONE",
+
 	}
 
 	if err := tx.WithContext(ctx).Create(&newClassSetting).Error; err != nil {

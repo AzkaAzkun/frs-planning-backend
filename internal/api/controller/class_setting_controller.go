@@ -48,7 +48,11 @@ func (c *classSettingController) Create(ctx *gin.Context) {
 		response.NewFailed("Failed to create new class setting", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
 		return
 	}
+
+	response.NewSuccess("Created new class setting", classSetting).Send(ctx)
+
 	response.NewSuccess("Created new class setting", classSetting)
+
 }
 
 func (c *classSettingController) Clone(ctx *gin.Context) {

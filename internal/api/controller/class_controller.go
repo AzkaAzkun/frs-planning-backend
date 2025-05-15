@@ -14,6 +14,7 @@ type ClassController interface {
 	GetClassByID(c *gin.Context)
 	UpdateClass(c *gin.Context)
 	DeleteClass(c *gin.Context)
+	GetClassesByCourseID(c *gin.Context)
 }
 
 type classController struct {
@@ -84,8 +85,27 @@ func (ctrl *classController) DeleteClass(c *gin.Context) {
 	id := c.Param("id")
 	if err := ctrl.classService.DeleteClass(c.Request.Context(), id); err != nil {
 		response.NewFailed("failed delete class", err).Send(c)
+
 		return
 	}
 
 	response.NewSuccess("success delete class", nil).Send(c)
+}
+
+func (ctrl *classController) GetClassesByCourseID(c *gin.Context) {
+	courseID := c.Param("course_id")
+
+	classes, err := ctrl.classService.GetClassesByCourseID(c.Request.Context(), courseID)
+	if err != nil {
+		response.NewFailed("failed get classes by course id", err).Send(c)
+		return
+	}
+
+	response.NewSuccess("success get classes by course id", classes).Send(c)
+
+		return
+	}
+
+	response.NewSuccess("success delete class", nil).Send(c)
+
 }

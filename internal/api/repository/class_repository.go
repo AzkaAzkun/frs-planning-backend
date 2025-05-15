@@ -17,6 +17,9 @@ type (
 		FindByID(ctx context.Context, tx *gorm.DB, id string) (entity.Class, error)
 		Update(ctx context.Context, tx *gorm.DB, class entity.Class) (entity.Class, error)
 		Delete(ctx context.Context, tx *gorm.DB, id string) error
+
+		FindByCourseID(ctx context.Context, tx *gorm.DB, courseID string) ([]entity.Class, error)
+
 	}
 
 	classRepository struct {
@@ -57,7 +60,12 @@ func (r *classRepository) FindByID(ctx context.Context, tx *gorm.DB, id string) 
 	}
 
 	var class entity.Class
+
+	// Use primary key query with where clause to avoid SQL parsing issues
+	if err := tx.WithContext(ctx).Where("id = ?", id).First(&class).Error; err != nil {
+
 	if err := tx.WithContext(ctx).First(&class, id).Error; err != nil {
+
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return entity.Class{}, myerror.New("class not found", http.StatusBadRequest)
 		}
@@ -87,4 +95,17 @@ func (r *classRepository) Delete(ctx context.Context, tx *gorm.DB, id string) er
 		return err
 	}
 	return nil
+}
+
+func (r *classRepository) FindByCourseID(ctx context.Context, tx *gorm.DB, courseID string) ([]entity.Class, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var classes []entity.Class
+	if err := tx.WithContext(ctx).Where("course_id = ?", courseID).Find(&classes).Error; err != nil {
+		return nil, err
+	}
+
+	return classes, nil
 }

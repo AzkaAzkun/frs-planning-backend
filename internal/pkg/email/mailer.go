@@ -24,7 +24,12 @@ type (
 )
 
 func New() Mailer {
-	port, err := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	portStr := os.Getenv("SMTP_PORT")
+	if portStr == "" {
+		// Default SMTP port if not set
+		portStr = "587"
+	}
+	port, err := strconv.Atoi(portStr)
 	if err != nil {
 		panic("invalid smtp port")
 	}
