@@ -111,6 +111,7 @@ func (s *classService) GetAllClasses(ctx context.Context) ([]dto.ClassResponse, 
 			CourseID:      class.CourseID.String(),
 			ClassSchedule: class.ClassSchedule,
 			Priority:      class.Priority,
+			Classroom:     class.Classroom,
 		})
 	}
 
@@ -129,6 +130,7 @@ func (s *classService) GetClassByID(ctx context.Context, id string) (dto.ClassRe
 		CourseID:      class.CourseID.String(),
 		ClassSchedule: class.ClassSchedule,
 		Priority:      class.Priority,
+		Classroom:     class.Classroom,
 	}, nil
 }
 
