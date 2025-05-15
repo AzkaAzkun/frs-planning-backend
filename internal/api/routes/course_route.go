@@ -7,10 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 func Course(router *gin.Engine, courseController controller.CourseController, classController controller.ClassController, middleware middleware.Middleware) {
-
-func Course(router *gin.Engine, courseController controller.CourseController, middleware middleware.Middleware) {
 
 	courseRoutes := router.Group("/api/v1/courses")
 	{

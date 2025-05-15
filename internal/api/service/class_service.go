@@ -7,7 +7,6 @@ import (
 	"frs-planning-backend/internal/entity"
 	"time"
 
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -33,19 +32,6 @@ func NewClassService(classRepo repository.ClassRepository, courseRepo repository
 		classRepo:  classRepo,
 		courseRepo: courseRepo,
 		db:         db,
-
-}
-
-type classService struct {
-	classRepo repository.ClassRepository
-	db        *gorm.DB
-}
-
-func NewClassService(classRepo repository.ClassRepository, db *gorm.DB) ClassService {
-	return &classService{
-		classRepo: classRepo,
-		db:        db,
-
 	}
 }
 
@@ -69,31 +55,17 @@ func (s *classService) CreateClass(ctx context.Context, req dto.CreateClassReque
 		ClassSchedule: parsedTime,
 		Priority:      req.Priority,
 		Classroom:     req.Classroom,
-
-	createResult, err := s.classRepo.Create(ctx, nil, entity.Class{
-		Lecturer:      req.Lecturer,
-		CourseID:      uuid.MustParse(req.CourseID),
-		ClassSchedule: req.ClassSchedule,
-		Priority:      req.Priority,
-
 	})
 	if err != nil {
 		return dto.ClassResponse{}, err
 	}
 
 	return dto.ClassResponse{
-
 		ID:        createResult.ID.String(),
 		Lecturer:  createResult.Lecturer,
 		CourseID:  createResult.CourseID.String(),
 		Priority:  createResult.Priority,
 		Classroom: createResult.Classroom,
-
-		ID:       createResult.ID.String(),
-		Lecturer: createResult.Lecturer,
-		CourseID: createResult.CourseID.String(),
-		Priority: createResult.Priority,
-
 	}, nil
 }
 
@@ -139,24 +111,15 @@ func (s *classService) UpdateClass(ctx context.Context, id string, req dto.Updat
 		return err
 	}
 
-
 	class := entity.Class{
 		ID:            uuid.MustParse(id),
 		Lecturer:      req.Lecturer,
 		CourseID:      uuid.MustParse(req.CourseID),
-
 		ClassSchedule: parsedTime,
 		Priority:      req.Priority,
 	}
 
 	_, err = s.classRepo.Update(ctx, nil, class)
-
-		ClassSchedule: req.ClassSchedule,
-		Priority:      req.Priority,
-	}
-
-	_, err := s.classRepo.Update(ctx, nil, class)
-
 	if err != nil {
 		return err
 	}

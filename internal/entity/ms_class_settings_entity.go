@@ -21,11 +21,8 @@ type ClassSettings struct {
 	Permission string    `json:"permission"`
 	Used       int       `json:"used"`
 
-	Status     string    `json:"status" gorm:"-"`
-	// Name field removed as per user request
-
-	Status     string    `json:"status"`
-	Name       string    `json:"name"`
+	Status string `json:"status"`
+	Name   string `json:"name"`
 
 	Timestamp
 }

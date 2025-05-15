@@ -102,10 +102,4 @@ func (ctrl *classController) GetClassesByCourseID(c *gin.Context) {
 	}
 
 	response.NewSuccess("success get classes by course id", classes).Send(c)
-
-		return
-	}
-
-	response.NewSuccess("success delete class", nil).Send(c)
-
 }
