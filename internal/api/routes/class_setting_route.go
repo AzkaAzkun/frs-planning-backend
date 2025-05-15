@@ -12,5 +12,7 @@ func ClassSetting(app *gin.Engine, classsettingcontroller controller.ClassSettin
 	{
 		routes.POST("/create", middleware.Authenticate(), classsettingcontroller.Create)
 		routes.POST("/clone", middleware.Authenticate(), classsettingcontroller.Clone)
+		routes.GET("", classsettingcontroller.GetAll)
+		routes.GET("/private", middleware.Authenticate(), classsettingcontroller.GetAllPrivate)
 	}
 }

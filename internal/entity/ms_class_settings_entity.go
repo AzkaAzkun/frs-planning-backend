@@ -20,9 +20,8 @@ type ClassSettings struct {
 	UserID     uuid.UUID `json:"user_id"`
 	Permission string    `json:"permission"`
 	Used       int       `json:"used"`
-
-	Status string `json:"status"`
-	Name   string `json:"name"`
+	Status     string    `json:"status"`
+	Name       string    `json:"name"`
 
 	Timestamp
 }

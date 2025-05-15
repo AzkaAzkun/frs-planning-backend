@@ -4,8 +4,7 @@ import (
 	"frs-planning-backend/internal/api/repository"
 	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
-
-	"time"
+	"frs-planning-backend/internal/pkg/meta"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
@@ -16,6 +15,8 @@ type (
 	ClassSettingService interface {
 		Create(ctx context.Context, req dto.CreateClassSettingRequest, userid string) (dto.ClassSettingResponse, error)
 		Clone(ctx context.Context, userid string, req dto.CloneClassSettingRequest) (dto.ClassSettingResponse, error)
+		GetAll(ctx context.Context, metareq meta.Meta) (dto.ClassSettingListResponse, error)
+		GetAllPrivate(ctx context.Context, userId string, metareq meta.Meta) (dto.ClassSettingListResponse, error)
 	}
 
 	classSettingService struct {
@@ -64,11 +65,6 @@ func (s *classSettingService) Create(ctx context.Context, req dto.CreateClassSet
 	}, nil
 }
 
-func parseTime(timeStr string) time.Time {
-	t, _ := time.Parse(time.RFC3339, timeStr)
-	return t
-}
-
 func (s *classSettingService) Clone(ctx context.Context, userid string, req dto.CloneClassSettingRequest) (dto.ClassSettingResponse, error) {
 	cloneClassSetting, err := s.classSettingRepository.Clone(ctx, nil, uuid.MustParse(userid), uuid.MustParse(req.ClassSettingId))
 	if err != nil {
@@ -83,5 +79,53 @@ func (s *classSettingService) Clone(ctx context.Context, userid string, req dto.
 
 		Name:   cloneClassSetting.Name,
 		Status: cloneClassSetting.Status,
+	}, nil
+}
+
+func (s *classSettingService) GetAll(ctx context.Context, metareq meta.Meta) (dto.ClassSettingListResponse, error) {
+	classSettings, err := s.classSettingRepository.FindAll(ctx, nil, metareq)
+	if err != nil {
+		return dto.ClassSettingListResponse{}, err
+	}
+
+	var classSettingResponses []dto.ClassSettingResponse
+	for _, classSetting := range classSettings.ClassSetting {
+		classSettingResponses = append(classSettingResponses, dto.ClassSettingResponse{
+			ID:         classSetting.ID.String(),
+			Name:       classSetting.Name,
+			User_id:    classSetting.UserID.String(),
+			Permission: classSetting.Permission,
+			Status:     classSetting.Status,
+		})
+	}
+
+	return dto.ClassSettingListResponse{
+		ClassSetting: classSettingResponses,
+		Meta:         classSettings.Meta,
+	}, nil
+}
+
+func (s *classSettingService) GetAllPrivate(ctx context.Context, userId string, metareq meta.Meta) (dto.ClassSettingListResponse, error) {
+	classSettings, err := s.classSettingRepository.FindAllPrivate(ctx, nil, userId, metareq)
+	if err != nil {
+		return dto.ClassSettingListResponse{}, err
+	}
+
+	var classSettingResponses []dto.ClassSettingResponse
+	for _, classSetting := range classSettings.ClassSetting {
+		if classSetting.UserID.String() == userId {
+			classSettingResponses = append(classSettingResponses, dto.ClassSettingResponse{
+				ID:         classSetting.ID.String(),
+				Name:       classSetting.Name,
+				User_id:    classSetting.UserID.String(),
+				Permission: classSetting.Permission,
+				Status:     classSetting.Status,
+			})
+		}
+	}
+
+	return dto.ClassSettingListResponse{
+		ClassSetting: classSettingResponses,
+		Meta:         classSettings.Meta,
 	}, nil
 }

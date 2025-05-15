@@ -4,7 +4,9 @@ import (
 	"frs-planning-backend/internal/api/service"
 	"frs-planning-backend/internal/dto"
 	myerror "frs-planning-backend/internal/pkg/error"
+	"frs-planning-backend/internal/pkg/meta"
 	"frs-planning-backend/internal/pkg/response"
+	"frs-planning-backend/internal/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +16,8 @@ type (
 	ClassSettingController interface {
 		Create(ctx *gin.Context)
 		Clone(ctx *gin.Context)
+		GetAll(ctx *gin.Context)
+		GetAllPrivate(ctx *gin.Context)
 	}
 
 	classSettingController struct {
@@ -77,4 +81,29 @@ func (c *classSettingController) Clone(ctx *gin.Context) {
 		return
 	}
 	response.NewSuccess("Cloned class setting", cloneClassSetting)
+}
+
+func (c *classSettingController) GetAll(ctx *gin.Context) {
+
+	classSettings, err := c.classSettingService.GetAll(ctx, meta.New(ctx))
+	if err != nil {
+		response.NewFailed("Failed to get class settings", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+	response.NewSuccess("Get all class settings", classSettings.ClassSetting, classSettings.Meta).Send(ctx)
+}
+
+func (c *classSettingController) GetAllPrivate(ctx *gin.Context) {
+	userId, err := utils.GetUserIdFromCtx(ctx)
+	if err != nil {
+		response.NewFailed("Failed to get user ID from context", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+
+	classSettings, err := c.classSettingService.GetAllPrivate(ctx, userId, meta.New(ctx))
+	if err != nil {
+		response.NewFailed("Failed to get class settings", myerror.New(err.Error(), http.StatusBadRequest)).Send(ctx)
+		return
+	}
+	response.NewSuccess("Get all class settings", classSettings.ClassSetting, classSettings.Meta).Send(ctx)
 }

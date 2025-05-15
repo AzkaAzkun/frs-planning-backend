@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
+	"frs-planning-backend/internal/pkg/meta"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
@@ -12,6 +14,8 @@ type (
 	ClassSettingRepository interface {
 		Create(ctx context.Context, tx *gorm.DB, classsetting entity.ClassSettings) (entity.ClassSettings, error)
 		Clone(ctx context.Context, tx *gorm.DB, userid uuid.UUID, classsettingid uuid.UUID) (entity.ClassSettings, error)
+		FindAll(ctx context.Context, tx *gorm.DB, metareq meta.Meta) (dto.ClassSettingList, error)
+		FindAllPrivate(ctx context.Context, tx *gorm.DB, userid string, metareq meta.Meta) (dto.ClassSettingList, error)
 	}
 
 	classSettingRepository struct {
@@ -44,13 +48,10 @@ func (r *classSettingRepository) Clone(ctx context.Context, tx *gorm.DB, userID 
 	}
 
 	newClassSetting := entity.ClassSettings{
-
 		UserID:     userID,
 		Permission: "PRIVATE",
-		// Name and Status fields removed as they do not exist in the database schema
-
-		Name:   originalClassSetting.Name,
-		Status: "CLONE",
+		Name:       originalClassSetting.Name,
+		Status:     "CLONE",
 	}
 
 	if err := tx.WithContext(ctx).Create(&newClassSetting).Error; err != nil {
@@ -98,4 +99,38 @@ func (r *classSettingRepository) Clone(ctx context.Context, tx *gorm.DB, userID 
 	}
 
 	return newClassSetting, nil
+}
+
+func (r *classSettingRepository) FindAll(ctx context.Context, tx *gorm.DB, metareq meta.Meta) (dto.ClassSettingList, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var classSettings []entity.ClassSettings
+	tx = tx.WithContext(ctx).Model(&entity.ClassSettings{}).Where("status = ? AND permission = ?", "OWN", "PUBLIC")
+	if err := WithFilters(tx, &metareq, AddModels(entity.ClassSettings{})).Find(&classSettings).Error; err != nil {
+		return dto.ClassSettingList{}, err
+	}
+
+	return dto.ClassSettingList{
+		ClassSetting: classSettings,
+		Meta:         metareq,
+	}, nil
+}
+
+func (r *classSettingRepository) FindAllPrivate(ctx context.Context, tx *gorm.DB, userid string, metareq meta.Meta) (dto.ClassSettingList, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var classSettings []entity.ClassSettings
+	tx = tx.WithContext(ctx).Model(&entity.ClassSettings{}).Where("user_id = ?", userid)
+	if err := WithFilters(tx, &metareq, AddModels(entity.ClassSettings{})).Find(&classSettings).Error; err != nil {
+		return dto.ClassSettingList{}, err
+	}
+
+	return dto.ClassSettingList{
+		ClassSetting: classSettings,
+		Meta:         metareq,
+	}, nil
 }
