@@ -83,10 +83,12 @@ func (r *classSettingRepository) Clone(ctx context.Context, tx *gorm.DB, userID 
 
 		for _, class := range classes {
 			newClass := entity.Class{
-				Lecturer:      class.Lecturer,
-				CourseID:      newCourse.ID,
-				ClassSchedule: class.ClassSchedule,
-				Priority:      class.Priority,
+				Lecturer:  class.Lecturer,
+				CourseID:  newCourse.ID,
+				Day:       class.Day,
+				StartTime: class.StartTime,
+				EndTime:   class.EndTime,
+				Classroom: class.Classroom,
 			}
 
 			if err := tx.WithContext(ctx).Create(&newClass).Error; err != nil {

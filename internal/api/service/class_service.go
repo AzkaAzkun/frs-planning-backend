@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"frs-planning-backend/internal/api/repository"
 	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,25 +38,24 @@ func NewClassService(classRepo repository.ClassRepository, courseRepo repository
 }
 
 func (s *classService) CreateClass(ctx context.Context, req dto.CreateClassRequest) (dto.ClassResponse, error) {
-
-	// Check if the course exists before creating the class
 	courseID := uuid.MustParse(req.CourseID)
 	_, err := s.courseRepo.FindByID(ctx, nil, req.CourseID)
 	if err != nil {
 		return dto.ClassResponse{}, err
 	}
 
-	parsedTime, err := time.Parse("15:04:05", req.ClassSchedule)
+	day, err := parseWeekday(req.Day)
 	if err != nil {
 		return dto.ClassResponse{}, err
 	}
 
 	createResult, err := s.classRepo.Create(ctx, nil, entity.Class{
-		Lecturer:      req.Lecturer,
-		CourseID:      courseID,
-		ClassSchedule: parsedTime,
-		Priority:      req.Priority,
-		Classroom:     req.Classroom,
+		Lecturer:  req.Lecturer,
+		CourseID:  courseID,
+		Day:       day.String(),
+		StartTime: req.StartTime,
+		EndTime:   req.EndTime,
+		Classroom: req.Classroom,
 	})
 	if err != nil {
 		return dto.ClassResponse{}, err
@@ -63,8 +64,10 @@ func (s *classService) CreateClass(ctx context.Context, req dto.CreateClassReque
 	return dto.ClassResponse{
 		ID:        createResult.ID.String(),
 		Lecturer:  createResult.Lecturer,
+		Day:       createResult.Day,
 		CourseID:  createResult.CourseID.String(),
-		Priority:  createResult.Priority,
+		StartTime: createResult.StartTime,
+		EndTime:   createResult.EndTime,
 		Classroom: createResult.Classroom,
 	}, nil
 }
@@ -78,12 +81,13 @@ func (s *classService) GetAllClasses(ctx context.Context) ([]dto.ClassResponse, 
 	var responses []dto.ClassResponse
 	for _, class := range classes {
 		responses = append(responses, dto.ClassResponse{
-			ID:            class.ID.String(),
-			Lecturer:      class.Lecturer,
-			CourseID:      class.CourseID.String(),
-			ClassSchedule: class.ClassSchedule,
-			Priority:      class.Priority,
-			Classroom:     class.Classroom,
+			ID:        class.ID.String(),
+			Lecturer:  class.Lecturer,
+			CourseID:  class.CourseID.String(),
+			Day:       class.Day,
+			StartTime: class.StartTime,
+			EndTime:   class.EndTime,
+			Classroom: class.Classroom,
 		})
 	}
 
@@ -97,28 +101,30 @@ func (s *classService) GetClassByID(ctx context.Context, id string) (dto.ClassRe
 	}
 
 	return dto.ClassResponse{
-		ID:            class.ID.String(),
-		Lecturer:      class.Lecturer,
-		CourseID:      class.CourseID.String(),
-		ClassSchedule: class.ClassSchedule,
-		Priority:      class.Priority,
-		Classroom:     class.Classroom,
+		ID:        class.ID.String(),
+		Lecturer:  class.Lecturer,
+		CourseID:  class.CourseID.String(),
+		Day:       class.Day,
+		StartTime: class.StartTime,
+		EndTime:   class.EndTime,
+		Classroom: class.Classroom,
 	}, nil
 }
 
 func (s *classService) UpdateClass(ctx context.Context, id string, req dto.UpdateClassRequest) error {
-
-	parsedTime, err := time.Parse("15:04:05", req.ClassSchedule)
+	day, err := parseWeekday(req.Day)
 	if err != nil {
 		return err
 	}
 
 	class := entity.Class{
-		ID:            uuid.MustParse(id),
-		Lecturer:      req.Lecturer,
-		CourseID:      uuid.MustParse(req.CourseID),
-		ClassSchedule: parsedTime,
-		Priority:      req.Priority,
+		ID:        uuid.MustParse(id),
+		Lecturer:  req.Lecturer,
+		CourseID:  uuid.MustParse(req.CourseID),
+		Day:       day.String(),
+		StartTime: req.StartTime,
+		EndTime:   req.EndTime,
+		Classroom: req.Classroom,
 	}
 
 	_, err = s.classRepo.Update(ctx, nil, class)
@@ -143,15 +149,37 @@ func (s *classService) GetClassesByCourseID(ctx context.Context, courseID string
 	var responses []dto.ClassResponse
 	for _, class := range classes {
 		responses = append(responses, dto.ClassResponse{
-			ID:            class.ID.String(),
-			Lecturer:      class.Lecturer,
-			CourseID:      class.CourseID.String(),
-			ClassSchedule: class.ClassSchedule,
-			Priority:      class.Priority,
-			Classroom:     class.Classroom,
+			ID:        class.ID.String(),
+			Lecturer:  class.Lecturer,
+			CourseID:  class.CourseID.String(),
+			Day:       class.Day,
+			StartTime: class.StartTime,
+			EndTime:   class.EndTime,
+			Classroom: class.Classroom,
 		})
 	}
 
 	return responses, nil
 
+}
+
+func parseWeekday(day string) (time.Weekday, error) {
+	switch strings.ToLower(day) {
+	case "sunday":
+		return time.Sunday, nil
+	case "monday":
+		return time.Monday, nil
+	case "tuesday":
+		return time.Tuesday, nil
+	case "wednesday":
+		return time.Wednesday, nil
+	case "thursday":
+		return time.Thursday, nil
+	case "friday":
+		return time.Friday, nil
+	case "saturday":
+		return time.Saturday, nil
+	default:
+		return time.Sunday, fmt.Errorf("invalid weekday: %s", day)
+	}
 }

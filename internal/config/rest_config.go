@@ -60,10 +60,8 @@ func NewRest() RestConfig {
 	routes.Auth(server, authController, middleware)
 	routes.User(server, userController, middleware)
 	routes.Class(server, classController, middleware)
-
 	routes.Course(server, courseController, classController, middleware)
 	routes.ClassSetting(server, controller.NewClassSettingController(service.NewClassSettingService(repository.NewClassSettingRepository(db), db)), middleware)
-
 	routes.Workspace(server, workspaceController, middleware)
 	routes.WorkspaceCollaborator(server, workspaceCollaboratorController, middleware)
 	routes.Plan(server, planController, middleware)
