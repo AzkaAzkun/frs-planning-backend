@@ -15,5 +15,6 @@ func Class(router *gin.Engine, classController controller.ClassController, middl
 		classRoutes.GET("/:id", middleware.Authenticate(), classController.GetClassByID)
 		classRoutes.PUT("/:id", middleware.Authenticate(), classController.UpdateClass)
 		classRoutes.DELETE("/:id", middleware.Authenticate(), classController.DeleteClass)
+		classRoutes.GET("/course/:course_id", middleware.Authenticate(), classController.GetClassesByCourseID)
 	}
 }
