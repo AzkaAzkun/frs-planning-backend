@@ -15,7 +15,8 @@ type (
 	PlanService interface {
 		CreatePlan(ctx context.Context, req dto.PlanCreateRequest) (dto.PlanResponse, error)
 		GetAllPlans(ctx context.Context, workspaceId string, metareq meta.Meta) (dto.GetAllPlanResponse, error)
-		// Update(ctx context.Context)
+		Update(ctx context.Context, planId string, req dto.PlanUpdateRequest) error
+		Delete(ctx context.Context, planId string) error
 	}
 
 	planService struct {
@@ -75,4 +76,34 @@ func (s *planService) GetAllPlans(ctx context.Context, workspaceId string, metar
 		Plans: planResponses,
 		Meta:  plans.Meta,
 	}, nil
+}
+
+func (s *planService) Update(ctx context.Context, planId string, req dto.PlanUpdateRequest) error {
+	plan, err := s.planRepo.FindByID(ctx, nil, planId)
+	if err != nil {
+		return err
+	}
+
+	plan.Name = req.Name
+
+	err = s.planRepo.Update(ctx, nil, plan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *planService) Delete(ctx context.Context, planId string) error {
+	plan, err := s.planRepo.FindByID(ctx, nil, planId)
+	if err != nil {
+		return err
+	}
+
+	err = s.planRepo.Delete(ctx, nil, plan.ID.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -11,6 +11,10 @@ type (
 		WorkspaceID string `json:"workspace_id" binding:"required"`
 	}
 
+	PlanUpdateRequest struct {
+		Name string `json:"name" binding:"required"`
+	}
+
 	PlanResponse struct {
 		ID          string `json:"id"`
 		WorkspaceID string `json:"workspace_id"`
