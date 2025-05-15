@@ -11,6 +11,7 @@ type (
 	EmailConfig struct {
 		Host         string
 		Port         int
+		SenderName   string
 		AuthEmail    string
 		AuthPassword string
 	}
@@ -23,7 +24,12 @@ type (
 )
 
 func New() Mailer {
-	port, err := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	portStr := os.Getenv("SMTP_PORT")
+	if portStr == "" {
+		// Default SMTP port if not set
+		portStr = "587"
+	}
+	port, err := strconv.Atoi(portStr)
 	if err != nil {
 		panic("invalid smtp port")
 	}
@@ -31,6 +37,7 @@ func New() Mailer {
 	emailConfig := &EmailConfig{
 		Host:         os.Getenv("SMTP_HOST"),
 		Port:         port,
+		SenderName:   os.Getenv("SMTP_SENDER_NAME"),
 		AuthEmail:    os.Getenv("SMTP_AUTH_EMAIL"),
 		AuthPassword: os.Getenv("SMTP_AUTH_PASSWORD"),
 	}
@@ -40,7 +47,7 @@ func New() Mailer {
 
 func (m Mailer) Send(toEmail, subject string) Mailer {
 	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", m.emailConfig.AuthEmail)
+	mailer.SetHeader("From", m.emailConfig.SenderName)
 	mailer.SetHeader("To", toEmail)
 	mailer.SetHeader("Subject", subject)
 	mailer.SetBody("text/html", m.Body)

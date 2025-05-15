@@ -60,6 +60,10 @@ func getParams(db *gorm.DB) error {
 		os.Exit(0)
 	}
 
+	if seeder || watch || migrate {
+		os.Exit(0)
+	}
+
 	return nil
 }
 

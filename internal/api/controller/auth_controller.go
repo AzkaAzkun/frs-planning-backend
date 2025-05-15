@@ -15,6 +15,9 @@ type (
 	AuthController interface {
 		Register(ctx *gin.Context)
 		Login(ctx *gin.Context)
+		Verify(ctx *gin.Context)
+		ForgotPassword(ctx *gin.Context)
+		ChangePassword(ctx *gin.Context)
 		Me(ctx *gin.Context)
 	}
 
@@ -60,6 +63,24 @@ func (c *authController) Login(ctx *gin.Context) {
 	}
 
 	response.NewSuccess("success login", result).Send(ctx)
+}
+
+func (c *authController) Verify(ctx *gin.Context) {
+	token := ctx.Query("token")
+	if err := c.authService.Verify(ctx, token); err != nil {
+		response.NewFailed("failed verify account", err).Send(ctx)
+		return
+	}
+
+	response.NewSuccess("success verify account", nil).Send(ctx)
+}
+
+func (c *authController) ForgotPassword(ctx *gin.Context) {
+
+}
+
+func (c *authController) ChangePassword(ctx *gin.Context) {
+
 }
 
 func (c *authController) Me(ctx *gin.Context) {

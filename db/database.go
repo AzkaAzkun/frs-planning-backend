@@ -23,7 +23,11 @@ func New() *gorm.DB {
 
 	fmt.Println(mylog.ColorizeInfo("\n=========== Setup Database ==========="))
 	mylog.Infof("Connecting to database...")
-	db, err := gorm.Open(postgres.Open(DBDSN), &gorm.Config{})
+
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  DBDSN,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{})
 	if err != nil {
 		mylog.Errorf("Failed connect to database")
 		mylog.Panicf("Failed connect to database")

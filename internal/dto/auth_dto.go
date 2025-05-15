@@ -8,7 +8,14 @@ type (
 
 	LoginResponse struct {
 		Token string `json:"token"`
-		Role  string `json:"role"`
+	}
+
+	ForgotPasswordRequest struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
+	ChangePasswordRequest struct {
+		NewPassword string `json:"new_password"`
 	}
 
 	GetMe struct {
@@ -19,8 +26,6 @@ type (
 		ID          string `json:"id"`
 		Username    string `json:"username"`
 		Email       string `json:"email"`
-		DisplayName string `json:"display_name"`
-		Bio         string `json:"bio"`
-		Role        string `json:"role"`
+		PhoneNumber string `json:"phone_number"`
 	}
 )

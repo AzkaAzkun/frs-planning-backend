@@ -69,5 +69,5 @@ func getSecretKey() string {
 }
 
 func getIssuer() string {
-	return "Film Management"
+	return "Frs Planning Team 2"
 }

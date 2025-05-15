@@ -12,6 +12,7 @@ func Auth(app *gin.Engine, authcontroller controller.AuthController, middleware 
 	{
 		routes.POST("/login", authcontroller.Login)
 		routes.POST("/register", authcontroller.Register)
+		routes.GET("/verify", authcontroller.Verify)
 		routes.GET("/me", middleware.Authenticate(), authcontroller.Me)
 	}
 }

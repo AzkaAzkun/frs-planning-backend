@@ -8,6 +8,7 @@ import (
 	"frs-planning-backend/internal/api/routes"
 	"frs-planning-backend/internal/api/service"
 	"frs-planning-backend/internal/middleware"
+	mailer "frs-planning-backend/internal/pkg/email"
 	"log"
 	"os"
 
@@ -21,53 +22,45 @@ type RestConfig struct {
 func NewRest() RestConfig {
 	db := db.New()
 	app := gin.Default()
-<<<<<<< HEAD
 	server := NewRouter(app)
-=======
-	server := NewRouter(app, db)
->>>>>>> b258106 (Commit fitur CRUD Course and Classes)
 	middleware := middleware.New(db)
 
 	var (
 		//=========== (PACKAGE) ===========//
-		// mailerService mailer.Mailer         = mailer.New()
+		mailerService mailer.Mailer = mailer.New()
 
 		//=========== (REPOSITORY) ===========//
-		userRepository repository.UserRepository = repository.NewUser(db)
-<<<<<<< HEAD
-=======
-		classRepository repository.ClassRepository = repository.NewClassRepository(db)
-		courseRepository repository.CourseRepository = repository.NewCourseRepository(db)
->>>>>>> b258106 (Commit fitur CRUD Course and Classes)
+		userRepository                  repository.UserRepository                  = repository.NewUserRepository(db)
+		classRepository                 repository.ClassRepository                 = repository.NewClassRepository(db)
+		courseRepository                repository.CourseRepository                = repository.NewCourseRepository(db)
+		workspaceRepository             repository.WorkspaceRepository             = repository.NewWorkspaceRepository(db)
+		workspaceCollaboratorRepository repository.WorkspaceCollaboratorRepository = repository.NewWOrkspaceCollaboratorRepository(db)
 
 		//=========== (SERVICE) ===========//
-		authService service.AuthService = service.NewAuth(userRepository, db)
-		userService service.UserService = service.NewUser(userRepository, db)
-<<<<<<< HEAD
-=======
-		classService service.ClassService = service.NewClassService(classRepository)
-		courseService service.CourseService = service.NewCourseService(courseRepository)
->>>>>>> b258106 (Commit fitur CRUD Course and Classes)
+		authService                  service.AuthService                   = service.NewAuthService(userRepository, mailerService, db)
+		userService                  service.UserService                   = service.NewUserService(userRepository, db)
+		classService                 service.ClassService                  = service.NewClassService(classRepository, courseRepository, db)
+		courseService                service.CourseService                 = service.NewCourseService(courseRepository)
+		workspaceService             service.WorkspaceService              = service.NewWorkspaceService(workspaceRepository, db)
+		workspaceCollaboratorService service.WorskspaceCollaboratorService = service.NewWorkspaceCollaboratorService(workspaceCollaboratorRepository, userRepository, db)
 
 		//=========== (CONTROLLER) ===========//
-		authController controller.AuthController = controller.NewAuth(authService)
-		userController controller.UserController = controller.NewUser(userService)
-<<<<<<< HEAD
-	)
-
-	routes.Auth(server, authController, middleware)
-	routes.User(server, userController, middleware)
-=======
-		classController controller.ClassController = controller.NewClassController(classService)
-		courseController controller.CourseController = controller.NewCourseController(courseService)
+		authController                  controller.AuthController                  = controller.NewAuth(authService)
+		userController                  controller.UserController                  = controller.NewUser(userService)
+		classController                 controller.ClassController                 = controller.NewClassController(classService)
+		courseController                controller.CourseController                = controller.NewCourseController(courseService)
+		workspaceController             controller.WorkspaceController             = controller.NewWorkspace(workspaceService)
+		workspaceCollaboratorController controller.WorkspaceCollaboratorController = controller.NewWorkspaceCOllaborator(workspaceCollaboratorService)
 	)
 
 	// Register all routes
 	routes.Auth(server, authController, middleware)
 	routes.User(server, userController, middleware)
-	routes.RegisterClassRoutes(server, db)  // This will use the classController internally
-	routes.RegisterCourseRoutes(server, db) // This will use the courseController internally
->>>>>>> b258106 (Commit fitur CRUD Course and Classes)
+	routes.Class(server, classController, middleware)
+	routes.Course(server, courseController, classController, middleware)
+	routes.ClassSetting(server, controller.NewClassSettingController(service.NewClassSettingService(repository.NewClassSettingRepository(db), db)), middleware)
+	routes.Workspace(server, workspaceController, middleware)
+	routes.WorkspaceCollaborator(server, workspaceCollaboratorController, middleware)
 	return RestConfig{
 		server: server,
 	}
