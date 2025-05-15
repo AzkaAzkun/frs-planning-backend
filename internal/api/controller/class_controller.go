@@ -85,6 +85,7 @@ func (ctrl *classController) DeleteClass(c *gin.Context) {
 	id := c.Param("id")
 	if err := ctrl.classService.DeleteClass(c.Request.Context(), id); err != nil {
 		response.NewFailed("failed delete class", err).Send(c)
+
 		return
 	}
 
@@ -101,4 +102,10 @@ func (ctrl *classController) GetClassesByCourseID(c *gin.Context) {
 	}
 
 	response.NewSuccess("success get classes by course id", classes).Send(c)
+
+		return
+	}
+
+	response.NewSuccess("success delete class", nil).Send(c)
+
 }

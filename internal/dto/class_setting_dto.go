@@ -15,5 +15,8 @@ type (
 		Name       string `json:"name"`
 		User_id    string `json:"user_id"`
 		Permission string `json:"permission"`
+
+		Status     string `json:"status"`
+
 	}
 )

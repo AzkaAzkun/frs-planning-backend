@@ -20,8 +20,13 @@ type ClassSettings struct {
 	UserID     uuid.UUID `json:"user_id"`
 	Permission string    `json:"permission"`
 	Used       int       `json:"used"`
+
 	Status     string    `json:"status" gorm:"-"`
 	// Name field removed as per user request
+
+	Status     string    `json:"status"`
+	Name       string    `json:"name"`
+
 	Timestamp
 }
 
