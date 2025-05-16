@@ -23,6 +23,7 @@ type (
 		ID        string `json:"id"`
 		Lecturer  string `json:"lecturer"`
 		CourseID  string `json:"course_id"`
+		Name      string `json:"name"`
 		Day       string `json:"day"`
 		StartTime string `json:"start_time"`
 		EndTime   string `json:"end_time"`

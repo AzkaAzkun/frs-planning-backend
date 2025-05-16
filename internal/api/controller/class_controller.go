@@ -3,6 +3,7 @@ package controller
 import (
 	"frs-planning-backend/internal/api/service"
 	"frs-planning-backend/internal/dto"
+	"frs-planning-backend/internal/pkg/meta"
 	"frs-planning-backend/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,7 @@ func (ctrl *classController) CreateClass(c *gin.Context) {
 }
 
 func (ctrl *classController) GetAllClasses(c *gin.Context) {
-	classes, err := ctrl.classService.GetAllClasses(c.Request.Context())
+	classes, err := ctrl.classService.GetAllClasses(c.Request.Context(), meta.New(c))
 	if err != nil {
 		response.NewFailed("failed get all classes", err).Send(c)
 		return

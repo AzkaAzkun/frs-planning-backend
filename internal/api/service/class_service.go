@@ -6,6 +6,7 @@ import (
 	"frs-planning-backend/internal/api/repository"
 	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
+	"frs-planning-backend/internal/pkg/meta"
 	"strings"
 	"time"
 
@@ -15,7 +16,7 @@ import (
 
 type ClassService interface {
 	CreateClass(ctx context.Context, req dto.CreateClassRequest) (dto.ClassResponse, error)
-	GetAllClasses(ctx context.Context) ([]dto.ClassResponse, error)
+	GetAllClasses(ctx context.Context, metareq meta.Meta) ([]dto.ClassResponse, error)
 	GetClassByID(ctx context.Context, id string) (dto.ClassResponse, error)
 	UpdateClass(ctx context.Context, id string, req dto.UpdateClassRequest) error
 	DeleteClass(ctx context.Context, id string) error
@@ -39,7 +40,7 @@ func NewClassService(classRepo repository.ClassRepository, courseRepo repository
 
 func (s *classService) CreateClass(ctx context.Context, req dto.CreateClassRequest) (dto.ClassResponse, error) {
 	courseID := uuid.MustParse(req.CourseID)
-	_, err := s.courseRepo.FindByID(ctx, nil, req.CourseID)
+	course, err := s.courseRepo.FindByID(ctx, nil, req.CourseID)
 	if err != nil {
 		return dto.ClassResponse{}, err
 	}
@@ -52,6 +53,7 @@ func (s *classService) CreateClass(ctx context.Context, req dto.CreateClassReque
 	createResult, err := s.classRepo.Create(ctx, nil, entity.Class{
 		Lecturer:  req.Lecturer,
 		CourseID:  courseID,
+		Name:      course.Name,
 		Day:       day.String(),
 		StartTime: req.StartTime,
 		EndTime:   req.EndTime,
@@ -65,6 +67,7 @@ func (s *classService) CreateClass(ctx context.Context, req dto.CreateClassReque
 		ID:        createResult.ID.String(),
 		Lecturer:  createResult.Lecturer,
 		Day:       createResult.Day,
+		Name:      createResult.Name,
 		CourseID:  createResult.CourseID.String(),
 		StartTime: createResult.StartTime,
 		EndTime:   createResult.EndTime,
@@ -72,8 +75,8 @@ func (s *classService) CreateClass(ctx context.Context, req dto.CreateClassReque
 	}, nil
 }
 
-func (s *classService) GetAllClasses(ctx context.Context) ([]dto.ClassResponse, error) {
-	classes, err := s.classRepo.FindAll(ctx, nil)
+func (s *classService) GetAllClasses(ctx context.Context, metareq meta.Meta) ([]dto.ClassResponse, error) {
+	classes, err := s.classRepo.FindAll(ctx, nil, metareq)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +87,7 @@ func (s *classService) GetAllClasses(ctx context.Context) ([]dto.ClassResponse, 
 			ID:        class.ID.String(),
 			Lecturer:  class.Lecturer,
 			CourseID:  class.CourseID.String(),
+			Name:      class.Name,
 			Day:       class.Day,
 			StartTime: class.StartTime,
 			EndTime:   class.EndTime,
@@ -105,6 +109,7 @@ func (s *classService) GetClassByID(ctx context.Context, id string) (dto.ClassRe
 		Lecturer:  class.Lecturer,
 		CourseID:  class.CourseID.String(),
 		Day:       class.Day,
+		Name:      class.Name,
 		StartTime: class.StartTime,
 		EndTime:   class.EndTime,
 		Classroom: class.Classroom,
@@ -112,6 +117,11 @@ func (s *classService) GetClassByID(ctx context.Context, id string) (dto.ClassRe
 }
 
 func (s *classService) UpdateClass(ctx context.Context, id string, req dto.UpdateClassRequest) error {
+	course, err := s.courseRepo.FindByID(ctx, nil, req.CourseID)
+	if err != nil {
+		return err
+	}
+
 	day, err := parseWeekday(req.Day)
 	if err != nil {
 		return err
@@ -122,6 +132,7 @@ func (s *classService) UpdateClass(ctx context.Context, id string, req dto.Updat
 		Lecturer:  req.Lecturer,
 		CourseID:  uuid.MustParse(req.CourseID),
 		Day:       day.String(),
+		Name:      course.Name,
 		StartTime: req.StartTime,
 		EndTime:   req.EndTime,
 		Classroom: req.Classroom,

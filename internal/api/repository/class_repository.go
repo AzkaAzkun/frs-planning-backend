@@ -5,6 +5,7 @@ import (
 	"errors"
 	"frs-planning-backend/internal/entity"
 	myerror "frs-planning-backend/internal/pkg/error"
+	"frs-planning-backend/internal/pkg/meta"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -13,7 +14,7 @@ import (
 type (
 	ClassRepository interface {
 		Create(ctx context.Context, tx *gorm.DB, class entity.Class) (entity.Class, error)
-		FindAll(ctx context.Context, tx *gorm.DB) ([]entity.Class, error)
+		FindAll(ctx context.Context, tx *gorm.DB, metareq meta.Meta) ([]entity.Class, error)
 		FindByID(ctx context.Context, tx *gorm.DB, id string) (entity.Class, error)
 		Update(ctx context.Context, tx *gorm.DB, class entity.Class) (entity.Class, error)
 		Delete(ctx context.Context, tx *gorm.DB, id string) error
@@ -41,13 +42,14 @@ func (r *classRepository) Create(ctx context.Context, tx *gorm.DB, class entity.
 	return class, nil
 }
 
-func (r *classRepository) FindAll(ctx context.Context, tx *gorm.DB) ([]entity.Class, error) {
+func (r *classRepository) FindAll(ctx context.Context, tx *gorm.DB, metareq meta.Meta) ([]entity.Class, error) {
 	if tx == nil {
 		tx = r.db
 	}
 
 	var classes []entity.Class
-	if err := tx.WithContext(ctx).Find(&classes).Error; err != nil {
+	tx = tx.WithContext(ctx).Model(&entity.Class{})
+	if err := WithFilters(tx, &metareq, AddModels(entity.Class{})).Find(&classes).Error; err != nil {
 		return nil, err
 	}
 	return classes, nil
