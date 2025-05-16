@@ -87,7 +87,7 @@ func (r *classRepository) Delete(ctx context.Context, tx *gorm.DB, id string) er
 		tx = r.db
 	}
 
-	if err := tx.WithContext(ctx).Delete(&entity.Class{}, id).Error; err != nil {
+	if err := tx.WithContext(ctx).Where("id = ?", id).Delete(&entity.Class{}).Error; err != nil {
 		return err
 	}
 	return nil
