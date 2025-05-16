@@ -41,6 +41,8 @@ func (r *workspaceRepository) Create(ctx context.Context, tx *gorm.DB, workspace
 	collab := entity.WorkspaceCollaborator{
 		UserID:      userid,
 		WorkspaceID: workspace.ID,
+		IsVerified:  true,
+		Permission:  "EDIT",
 	}
 
 	if err := tx.WithContext(ctx).Create(&collab).Error; err != nil {

@@ -11,12 +11,18 @@ import (
 type (
 	WorkspaceCollaboratorRepository interface {
 		Add(ctx context.Context, tx *gorm.DB, collaborator entity.WorkspaceCollaborator) (entity.WorkspaceCollaborator, error)
-		Get(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID) ([]entity.WorkspaceCollaborator, error)
+		Get(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID) ([]CollaboratorWithUser, error)
 		Delete(ctx context.Context, tx *gorm.DB, userid uuid.UUID, workspaceid uuid.UUID) (entity.WorkspaceCollaborator, error)
 	}
 
 	workspaceColllaboratorRepository struct {
 		db *gorm.DB
+	}
+
+	CollaboratorWithUser struct {
+		entity.User
+		Permission string
+		IsVerified bool
 	}
 )
 
@@ -37,7 +43,7 @@ func (r *workspaceColllaboratorRepository) Add(ctx context.Context, tx *gorm.DB,
 	return collaborator, nil
 }
 
-func (r *workspaceColllaboratorRepository) Get(ctx context.Context, tx *gorm.DB, workspaceID uuid.UUID) ([]entity.WorkspaceCollaborator, error) {
+func (r *workspaceColllaboratorRepository) Get(ctx context.Context, tx *gorm.DB, workspaceID uuid.UUID) ([]CollaboratorWithUser, error) {
 	if tx == nil {
 		tx = r.db
 	}
@@ -50,7 +56,42 @@ func (r *workspaceColllaboratorRepository) Get(ctx context.Context, tx *gorm.DB,
 		return nil, err
 	}
 
-	return collaborators, nil
+	userIDs := make([]uuid.UUID, 0, len(collaborators))
+	userMeta := make(map[uuid.UUID]struct {
+		Permission string
+		IsVerified bool
+	})
+	for _, c := range collaborators {
+		userIDs = append(userIDs, c.UserID)
+		userMeta[c.UserID] = struct {
+			Permission string
+			IsVerified bool
+		}{
+			Permission: string(c.Permission),
+			IsVerified: c.IsVerified,
+		}
+	}
+
+	var users []entity.User
+	err = tx.WithContext(ctx).
+		Where("id IN ?", userIDs).
+		Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Combine data
+	var result []CollaboratorWithUser
+	for _, u := range users {
+		meta := userMeta[u.ID]
+		result = append(result, CollaboratorWithUser{
+			User:       u,
+			Permission: meta.Permission,
+			IsVerified: meta.IsVerified,
+		})
+	}
+
+	return result, nil
 }
 
 func (r *workspaceColllaboratorRepository) Delete(ctx context.Context, tx *gorm.DB, userid uuid.UUID, workspaceid uuid.UUID) (entity.WorkspaceCollaborator, error) {

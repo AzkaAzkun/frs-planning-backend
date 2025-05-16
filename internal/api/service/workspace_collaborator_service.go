@@ -14,7 +14,7 @@ import (
 type (
 	WorskspaceCollaboratorService interface {
 		Add(ctx context.Context, req dto.AddCollaboratorRequest) (dto.CollaboratorResponse, error)
-		Get(ctx context.Context, workspaceid uuid.UUID) ([]dto.CollaboratorResponse, error)
+		Get(ctx context.Context, workspaceid uuid.UUID) ([]dto.GetAllCollaboratorResponse, error)
 		Delete(ctx context.Context, req dto.DeleteCollaboratorRequest) (dto.CollaboratorResponse, error)
 	}
 
@@ -57,19 +57,19 @@ func (s *workspaceCollaboratorService) Add(ctx context.Context, req dto.AddColla
 	}, nil
 }
 
-func (s *workspaceCollaboratorService) Get(ctx context.Context, workspaceid uuid.UUID) ([]dto.CollaboratorResponse, error) {
+func (s *workspaceCollaboratorService) Get(ctx context.Context, workspaceid uuid.UUID) ([]dto.GetAllCollaboratorResponse, error) {
 	collabs, err := s.workspaceCollaboratorRepository.Get(ctx, nil, workspaceid)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get collaborators: %w", err)
 	}
 
-	var responses []dto.CollaboratorResponse
+	var responses []dto.GetAllCollaboratorResponse
 	for _, c := range collabs {
-		responses = append(responses, dto.CollaboratorResponse{
-			UserId:      c.UserID.String(),
-			Workspaceid: c.WorkspaceID.String(),
-			IsVerified:  c.IsVerified,
-			Permission:  string(c.Permission),
+		responses = append(responses, dto.GetAllCollaboratorResponse{
+			Email:      c.Email,
+			Name:       c.Username,
+			Permission: c.Permission,
+			IsVerified: c.IsVerified,
 		})
 	}
 

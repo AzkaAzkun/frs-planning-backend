@@ -56,8 +56,7 @@ func (s *classSettingService) Create(ctx context.Context, req dto.CreateClassSet
 	}
 
 	return dto.ClassSettingResponse{
-		ID: classSetting.ID.String(),
-		// Name field removed as it no longer exists in the entity
+		ID:         classSetting.ID.String(),
 		Name:       classSetting.Name,
 		User_id:    classSetting.UserID.String(),
 		Permission: classSetting.Permission,
@@ -73,7 +72,6 @@ func (s *classSettingService) Clone(ctx context.Context, userid string, req dto.
 	return dto.ClassSettingResponse{
 		ID: cloneClassSetting.ID.String(),
 
-		// Name field removed as it no longer exists in the entity
 		User_id:    cloneClassSetting.UserID.String(),
 		Permission: cloneClassSetting.Permission,
 
