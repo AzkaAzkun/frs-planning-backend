@@ -3,6 +3,7 @@ package controller
 import (
 	"frs-planning-backend/internal/api/service"
 	"frs-planning-backend/internal/dto"
+	"frs-planning-backend/internal/pkg/meta"
 	"frs-planning-backend/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ type ClassController interface {
 	GetClassByID(c *gin.Context)
 	UpdateClass(c *gin.Context)
 	DeleteClass(c *gin.Context)
+	GetClassesByCourseID(c *gin.Context)
 }
 
 type classController struct {
@@ -43,7 +45,7 @@ func (ctrl *classController) CreateClass(c *gin.Context) {
 }
 
 func (ctrl *classController) GetAllClasses(c *gin.Context) {
-	classes, err := ctrl.classService.GetAllClasses(c.Request.Context())
+	classes, err := ctrl.classService.GetAllClasses(c.Request.Context(), meta.New(c))
 	if err != nil {
 		response.NewFailed("failed get all classes", err).Send(c)
 		return
@@ -84,8 +86,21 @@ func (ctrl *classController) DeleteClass(c *gin.Context) {
 	id := c.Param("id")
 	if err := ctrl.classService.DeleteClass(c.Request.Context(), id); err != nil {
 		response.NewFailed("failed delete class", err).Send(c)
+
 		return
 	}
 
 	response.NewSuccess("success delete class", nil).Send(c)
+}
+
+func (ctrl *classController) GetClassesByCourseID(c *gin.Context) {
+	courseID := c.Param("course_id")
+
+	classes, err := ctrl.classService.GetClassesByCourseID(c.Request.Context(), courseID)
+	if err != nil {
+		response.NewFailed("failed get classes by course id", err).Send(c)
+		return
+	}
+
+	response.NewSuccess("success get classes by course id", classes).Send(c)
 }

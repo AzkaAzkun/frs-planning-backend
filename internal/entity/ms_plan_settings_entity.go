@@ -15,7 +15,9 @@ type PlanSettings struct {
 	PlanID  uuid.UUID          `json:"plan_id" gorm:"type:uuid"`
 	ClassID uuid.UUID          `json:"class_id" gorm:"type:uuid"`
 	Status  StatusPlanSettings `json:"status"`
-	IsLock  int64              `json:"is_lock"`
+	IsLock  bool               `json:"is_lock"`
+
+	Timestamp
 }
 
 func (PlanSettings) TableName() string {

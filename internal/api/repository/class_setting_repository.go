@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
+	"frs-planning-backend/internal/pkg/meta"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
@@ -12,6 +14,8 @@ type (
 	ClassSettingRepository interface {
 		Create(ctx context.Context, tx *gorm.DB, classsetting entity.ClassSettings) (entity.ClassSettings, error)
 		Clone(ctx context.Context, tx *gorm.DB, userid uuid.UUID, classsettingid uuid.UUID) (entity.ClassSettings, error)
+		FindAll(ctx context.Context, tx *gorm.DB, metareq meta.Meta) (dto.ClassSettingList, error)
+		FindAllPrivate(ctx context.Context, tx *gorm.DB, userid string, metareq meta.Meta) (dto.ClassSettingList, error)
 	}
 
 	classSettingRepository struct {
@@ -44,9 +48,9 @@ func (r *classSettingRepository) Clone(ctx context.Context, tx *gorm.DB, userID 
 	}
 
 	newClassSetting := entity.ClassSettings{
-		Name:       originalClassSetting.Name,
 		UserID:     userID,
 		Permission: "PRIVATE",
+		Name:       originalClassSetting.Name,
 		Status:     "CLONE",
 	}
 
@@ -80,10 +84,12 @@ func (r *classSettingRepository) Clone(ctx context.Context, tx *gorm.DB, userID 
 
 		for _, class := range classes {
 			newClass := entity.Class{
-				Lecturer:      class.Lecturer,
-				CourseID:      newCourse.ID,
-				ClassSchedule: class.ClassSchedule,
-				Priority:      class.Priority,
+				Lecturer:  class.Lecturer,
+				CourseID:  newCourse.ID,
+				Day:       class.Day,
+				StartTime: class.StartTime,
+				EndTime:   class.EndTime,
+				Classroom: class.Classroom,
 			}
 
 			if err := tx.WithContext(ctx).Create(&newClass).Error; err != nil {
@@ -93,4 +99,38 @@ func (r *classSettingRepository) Clone(ctx context.Context, tx *gorm.DB, userID 
 	}
 
 	return newClassSetting, nil
+}
+
+func (r *classSettingRepository) FindAll(ctx context.Context, tx *gorm.DB, metareq meta.Meta) (dto.ClassSettingList, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var classSettings []entity.ClassSettings
+	tx = tx.WithContext(ctx).Model(&entity.ClassSettings{}).Where("status = ? AND permission = ?", "OWN", "PUBLIC")
+	if err := WithFilters(tx, &metareq, AddModels(entity.ClassSettings{})).Find(&classSettings).Error; err != nil {
+		return dto.ClassSettingList{}, err
+	}
+
+	return dto.ClassSettingList{
+		ClassSetting: classSettings,
+		Meta:         metareq,
+	}, nil
+}
+
+func (r *classSettingRepository) FindAllPrivate(ctx context.Context, tx *gorm.DB, userid string, metareq meta.Meta) (dto.ClassSettingList, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var classSettings []entity.ClassSettings
+	tx = tx.WithContext(ctx).Model(&entity.ClassSettings{}).Where("user_id = ?", userid)
+	if err := WithFilters(tx, &metareq, AddModels(entity.ClassSettings{})).Find(&classSettings).Error; err != nil {
+		return dto.ClassSettingList{}, err
+	}
+
+	return dto.ClassSettingList{
+		ClassSetting: classSettings,
+		Meta:         metareq,
+	}, nil
 }

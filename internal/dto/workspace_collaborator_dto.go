@@ -13,6 +13,13 @@ type (
 		Workspaceid string `json:"workspaceid" binding:"required"`
 	}
 
+	GetAllCollaboratorResponse struct {
+		Email      string `json:"email"`
+		Name       string `json:"name"`
+		IsVerified bool   `json:"is_verified"`
+		Permission string `json:"permission"`
+	}
+
 	CollaboratorResponse struct {
 		UserId      string `json:"userid"`
 		Workspaceid string `json:"workspaceid"`

@@ -1,5 +1,10 @@
 package dto
 
+import (
+	"frs-planning-backend/internal/entity"
+	"frs-planning-backend/internal/pkg/meta"
+)
+
 type (
 	CreateClassSettingRequest struct {
 		Name       string `json:"name" binding:"required"`
@@ -16,5 +21,15 @@ type (
 		User_id    string `json:"user_id"`
 		Permission string `json:"permission"`
 		Status     string `json:"status"`
+	}
+
+	ClassSettingListResponse struct {
+		ClassSetting []ClassSettingResponse `json:"class_settings"`
+		Meta         meta.Meta              `json:"meta"`
+	}
+
+	ClassSettingList struct {
+		ClassSetting []entity.ClassSettings `json:"class_settings"`
+		Meta         meta.Meta              `json:"meta"`
 	}
 )

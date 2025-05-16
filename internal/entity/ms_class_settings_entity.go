@@ -22,6 +22,7 @@ type ClassSettings struct {
 	Used       int       `json:"used"`
 	Status     string    `json:"status"`
 	Name       string    `json:"name"`
+
 	Timestamp
 }
 

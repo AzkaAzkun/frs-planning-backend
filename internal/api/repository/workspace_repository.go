@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"frs-planning-backend/internal/dto"
 	"frs-planning-backend/internal/entity"
+	"frs-planning-backend/internal/pkg/meta"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
@@ -12,7 +14,7 @@ type (
 	WorkspaceRepository interface {
 		Create(ctx context.Context, tx *gorm.DB, workspace entity.Workspace, userid uuid.UUID) (entity.Workspace, error)
 		Find(ctx context.Context, tx *gorm.DB, workspace uuid.UUID) (entity.Workspace, error)
-		Get(ctx context.Context, tx *gorm.DB, userid uuid.UUID) ([]entity.Workspace, error)
+		Get(ctx context.Context, tx *gorm.DB, userid uuid.UUID, metareq meta.Meta) (dto.GetAllWorkspace, error)
 		Update(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID, name string) (entity.Workspace, error)
 		Delete(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID) (entity.Workspace, error)
 	}
@@ -39,6 +41,8 @@ func (r *workspaceRepository) Create(ctx context.Context, tx *gorm.DB, workspace
 	collab := entity.WorkspaceCollaborator{
 		UserID:      userid,
 		WorkspaceID: workspace.ID,
+		IsVerified:  true,
+		Permission:  "EDIT",
 	}
 
 	if err := tx.WithContext(ctx).Create(&collab).Error; err != nil {
@@ -62,7 +66,7 @@ func (r *workspaceRepository) Find(ctx context.Context, tx *gorm.DB, workspaceid
 	return workspace, nil
 }
 
-func (r *workspaceRepository) Get(ctx context.Context, tx *gorm.DB, userid uuid.UUID) ([]entity.Workspace, error) {
+func (r *workspaceRepository) Get(ctx context.Context, tx *gorm.DB, userid uuid.UUID, metareq meta.Meta) (dto.GetAllWorkspace, error) {
 	if tx == nil {
 		tx = r.db
 	}
@@ -71,16 +75,19 @@ func (r *workspaceRepository) Get(ctx context.Context, tx *gorm.DB, userid uuid.
 		Model(&entity.WorkspaceCollaborator{}).
 		Where("user_id = ?", userid).
 		Pluck("workspace_id", &workspaceIDs).Error; err != nil {
-		return []entity.Workspace{}, err
-	}
-	var userWorkspaces []entity.Workspace
-	if err := tx.WithContext(ctx).
-		Where("id IN ?", workspaceIDs).
-		Find(&userWorkspaces).Error; err != nil {
-		return []entity.Workspace{}, err
+		return dto.GetAllWorkspace{}, err
 	}
 
-	return userWorkspaces, nil
+	var userWorkspaces []entity.Workspace
+	query := tx.WithContext(ctx).Model(entity.Workspace{}).Where("id IN ?", workspaceIDs)
+	if err := WithFilters(query, &metareq, AddModels(entity.Workspace{})).Find(&userWorkspaces).Error; err != nil {
+		return dto.GetAllWorkspace{}, err
+	}
+
+	return dto.GetAllWorkspace{
+		Workspaces: userWorkspaces,
+		Meta:       metareq,
+	}, nil
 }
 
 func (r *workspaceRepository) Update(ctx context.Context, tx *gorm.DB, workspaceid uuid.UUID, name string) (entity.Workspace, error) {
