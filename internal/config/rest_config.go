@@ -35,6 +35,7 @@ func NewRest() RestConfig {
 		courseRepository                repository.CourseRepository                = repository.NewCourseRepository(db)
 		workspaceRepository             repository.WorkspaceRepository             = repository.NewWorkspaceRepository(db)
 		workspaceCollaboratorRepository repository.WorkspaceCollaboratorRepository = repository.NewWOrkspaceCollaboratorRepository(db)
+		classSettingRepository          repository.ClassSettingRepository          = repository.NewClassSettingRepository(db)
 
 		//=========== (SERVICE) ===========//
 		authService                  service.AuthService                   = service.NewAuthService(userRepository, mailerService, db)
@@ -43,6 +44,7 @@ func NewRest() RestConfig {
 		courseService                service.CourseService                 = service.NewCourseService(courseRepository)
 		workspaceService             service.WorkspaceService              = service.NewWorkspaceService(workspaceRepository, db)
 		workspaceCollaboratorService service.WorskspaceCollaboratorService = service.NewWorkspaceCollaboratorService(workspaceCollaboratorRepository, userRepository, db)
+		classSettingService          service.ClassSettingService           = service.NewClassSettingService(classSettingRepository, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController                  controller.AuthController                  = controller.NewAuth(authService)
@@ -51,6 +53,7 @@ func NewRest() RestConfig {
 		courseController                controller.CourseController                = controller.NewCourseController(courseService)
 		workspaceController             controller.WorkspaceController             = controller.NewWorkspace(workspaceService)
 		workspaceCollaboratorController controller.WorkspaceCollaboratorController = controller.NewWorkspaceCOllaborator(workspaceCollaboratorService)
+		classSettingController          controller.ClassSettingController          = controller.NewClassSettingController(classSettingService)
 	)
 
 	// Register all routes
@@ -60,6 +63,7 @@ func NewRest() RestConfig {
 	routes.Course(server, courseController, middleware)
 	routes.Workspace(server, workspaceController, middleware)
 	routes.WorkspaceCollaborator(server, workspaceCollaboratorController, middleware)
+	routes.ClassSetting(server, classSettingController, middleware)
 	return RestConfig{
 		server: server,
 	}
