@@ -10,8 +10,8 @@ import (
 func WorkspaceCollaborator(app *gin.Engine, workspacecollaborartor controller.WorkspaceCollaboratorController, middleware middleware.Middleware) {
 	routes := app.Group("/api/v1/workspace")
 	{
-		routes.POST("/add", workspacecollaborartor.AddCollaborator)
-		routes.GET("/collaborators/:workspaceid", workspacecollaborartor.GetAllCollaborator)
-		routes.DELETE("/remove", workspacecollaborartor.DeleteCollaborator)
+		routes.POST("/add", middleware.Authenticate(), workspacecollaborartor.AddCollaborator)
+		routes.GET("/collaborators/:workspaceid", middleware.Authenticate(), workspacecollaborartor.GetAllCollaborator)
+		routes.DELETE("/remove", middleware.Authenticate(), workspacecollaborartor.DeleteCollaborator)
 	}
 }
