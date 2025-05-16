@@ -15,7 +15,7 @@ type (
 	PlanController interface {
 		CreatePlan(c *gin.Context)
 		GetAllPlans(c *gin.Context)
-		// GetPlanDetail(c *gin.Context)
+		GetPlanDetail(c *gin.Context)
 		UpdatePlan(c *gin.Context)
 		DeletePlan(c *gin.Context)
 	}
@@ -56,6 +56,16 @@ func (p *planController) GetAllPlans(c *gin.Context) {
 	}
 
 	response.NewSuccess("Get all plans", result.Plans, result.Meta).Send(c)
+}
+
+func (p *planController) GetPlanDetail(c *gin.Context) {
+	planId := c.Param("id")
+	plan, err := p.planService.GetPlanDetail(c, planId)
+	if err != nil {
+		response.NewFailed("Failed to get plan detail", err).Send(c)
+		return
+	}
+	response.NewSuccess("Get plan detail", plan).Send(c)
 }
 
 func (p *planController) UpdatePlan(c *gin.Context) {

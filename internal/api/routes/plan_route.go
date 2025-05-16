@@ -12,7 +12,7 @@ func Plan(router *gin.Engine, planController controller.PlanController, middlewa
 	{
 		planRoutes.POST("", middleware.Authenticate(), planController.CreatePlan)
 		planRoutes.GET(":id/workspaces", middleware.Authenticate(), planController.GetAllPlans)
-		// planRoutes.GET("/:id", planController.GetCourseByID)
+		planRoutes.GET("/:id", middleware.Authenticate(), planController.GetPlanDetail)
 		planRoutes.PUT("/:id", middleware.Authenticate(), planController.UpdatePlan)
 		planRoutes.DELETE("/:id", middleware.Authenticate(), planController.DeletePlan)
 	}

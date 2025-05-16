@@ -37,6 +37,7 @@ func NewRest() RestConfig {
 		workspaceCollaboratorRepository repository.WorkspaceCollaboratorRepository = repository.NewWOrkspaceCollaboratorRepository(db)
 		classSettingRepository          repository.ClassSettingRepository          = repository.NewClassSettingRepository(db)
 		planRepository                  repository.PlanRepository                  = repository.NewPlanRepository(db)
+		planSettingRepository           repository.PlanSettingRepository           = repository.NewPlanSettingRepository(db)
 
 		//=========== (SERVICE) ===========//
 		authService                  service.AuthService                   = service.NewAuthService(userRepository, mailerService, db)
@@ -47,6 +48,7 @@ func NewRest() RestConfig {
 		workspaceCollaboratorService service.WorskspaceCollaboratorService = service.NewWorkspaceCollaboratorService(workspaceCollaboratorRepository, userRepository, db)
 		classSettingService          service.ClassSettingService           = service.NewClassSettingService(classSettingRepository, db)
 		planService                  service.PlanService                   = service.NewPlanService(planRepository, workspaceRepository, db)
+		planSettingService           service.PlanSettingService            = service.NewPlanSettingService(planSettingRepository, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController                  controller.AuthController                  = controller.NewAuth(authService)
@@ -57,6 +59,7 @@ func NewRest() RestConfig {
 		workspaceCollaboratorController controller.WorkspaceCollaboratorController = controller.NewWorkspaceCOllaborator(workspaceCollaboratorService)
 		classSettingController          controller.ClassSettingController          = controller.NewClassSettingController(classSettingService)
 		planController                  controller.PlanController                  = controller.NewPlanController(planService)
+		planSettingController           controller.PlanSettingController           = controller.NewPlanSettingController(planSettingService)
 	)
 
 	// Register all routes
@@ -68,6 +71,7 @@ func NewRest() RestConfig {
 	routes.WorkspaceCollaborator(server, workspaceCollaboratorController, middleware)
 	routes.ClassSetting(server, classSettingController, middleware)
 	routes.Plan(server, planController, middleware)
+	routes.PlanSetting(server, planSettingController, middleware)
 	return RestConfig{
 		server: server,
 	}

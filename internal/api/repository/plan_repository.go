@@ -63,7 +63,7 @@ func (r *planRepository) FindByID(ctx context.Context, tx *gorm.DB, id string) (
 
 	var plan entity.Plan
 
-	if err := tx.WithContext(ctx).Where("id = ?", id).First(&plan).Error; err != nil {
+	if err := tx.WithContext(ctx).Where("id = ?", id).Preload("PlanSettings").Preload("PlanSettings.Class").First(&plan).Error; err != nil {
 		return entity.Plan{}, err
 	}
 

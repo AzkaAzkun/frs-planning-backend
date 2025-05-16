@@ -15,6 +15,7 @@ type (
 	PlanService interface {
 		CreatePlan(ctx context.Context, req dto.PlanCreateRequest) (dto.PlanResponse, error)
 		GetAllPlans(ctx context.Context, workspaceId string, metareq meta.Meta) (dto.GetAllPlanResponse, error)
+		GetPlanDetail(ctx context.Context, planId string) (dto.PlanDetailResponse, error)
 		Update(ctx context.Context, planId string, req dto.PlanUpdateRequest) error
 		Delete(ctx context.Context, planId string) error
 	}
@@ -75,6 +76,37 @@ func (s *planService) GetAllPlans(ctx context.Context, workspaceId string, metar
 	return dto.GetAllPlanResponse{
 		Plans: planResponses,
 		Meta:  plans.Meta,
+	}, nil
+}
+
+func (s *planService) GetPlanDetail(ctx context.Context, planId string) (dto.PlanDetailResponse, error) {
+	plan, err := s.planRepo.FindByID(ctx, nil, planId)
+	if err != nil {
+		return dto.PlanDetailResponse{}, err
+	}
+
+	var planResponse []dto.PlanSettingResponse
+	for _, planSetting := range plan.PlanSettings {
+		planResponse = append(planResponse, dto.PlanSettingResponse{
+			ID:      planSetting.ID.String(),
+			ClassID: planSetting.Class.ID.String(),
+			Class: dto.ClassResponse{
+				ID:        planSetting.Class.ID.String(),
+				Lecturer:  planSetting.Class.Lecturer,
+				Name:      planSetting.Class.Name,
+				Classroom: planSetting.Class.Classroom,
+				Day:       planSetting.Class.Day,
+				StartTime: planSetting.Class.StartTime,
+				EndTime:   planSetting.Class.EndTime,
+			},
+		})
+	}
+
+	return dto.PlanDetailResponse{
+		ID:           plan.ID.String(),
+		WorkspaceID:  plan.WorkspaceID.String(),
+		Name:         plan.Name,
+		PlanSettings: planResponse,
 	}, nil
 }
 

@@ -30,4 +30,11 @@ type (
 		Plans []PlanResponse `json:"plans"`
 		Meta  meta.Meta      `json:"meta"`
 	}
+
+	PlanDetailResponse struct {
+		ID           string                `json:"id"`
+		WorkspaceID  string                `json:"workspace_id"`
+		Name         string                `json:"name"`
+		PlanSettings []PlanSettingResponse `json:"plan_settings"`
+	}
 )
