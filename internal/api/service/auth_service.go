@@ -56,6 +56,7 @@ func (s *authService) Register(ctx context.Context, req dto.RegisterRequest) (dt
 		Email:       req.Email,
 		Password:    req.Password,
 		PhoneNumber: req.PhoneNumber,
+		IsVerified:  true,
 	})
 	if err != nil {
 		return dto.RegisterResponse{}, err
