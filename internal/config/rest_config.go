@@ -48,7 +48,7 @@ func NewRest() RestConfig {
 		workspaceCollaboratorService service.WorskspaceCollaboratorService = service.NewWorkspaceCollaboratorService(workspaceCollaboratorRepository, userRepository, db)
 		classSettingService          service.ClassSettingService           = service.NewClassSettingService(classSettingRepository, db)
 		planService                  service.PlanService                   = service.NewPlanService(planRepository, workspaceRepository, db)
-		planSettingService           service.PlanSettingService            = service.NewPlanSettingService(planSettingRepository, db)
+		planSettingService           service.PlanSettingService            = service.NewPlanSettingService(planSettingRepository, classRepository, planService, db)
 
 		//=========== (CONTROLLER) ===========//
 		authController                  controller.AuthController                  = controller.NewAuth(authService)

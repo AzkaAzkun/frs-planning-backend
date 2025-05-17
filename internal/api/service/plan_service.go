@@ -92,6 +92,7 @@ func (s *planService) GetPlanDetail(ctx context.Context, planId string) (dto.Pla
 			ClassID: planSetting.Class.ID.String(),
 			Class: dto.ClassResponse{
 				ID:        planSetting.Class.ID.String(),
+				CourseID:  planSetting.Class.CourseID.String(),
 				Lecturer:  planSetting.Class.Lecturer,
 				Name:      planSetting.Class.Name,
 				Classroom: planSetting.Class.Classroom,
